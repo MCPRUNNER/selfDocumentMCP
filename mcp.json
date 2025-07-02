@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "selfDocumentMCP": {
+      "command": "dotnet",
+      "args": ["run", "--project", "c:\\Users\\U00001\\source\\repos\\MCP\\selfDocumentMCP\\selfDocumentMCP.csproj"],
+      "env": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
