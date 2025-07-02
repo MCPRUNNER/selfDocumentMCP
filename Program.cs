@@ -4,6 +4,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using SelfDocumentMCP.Services;
+using System.Text;
+
+// Ensure UTF-8 encoding for stdout
+Console.OutputEncoding = Encoding.UTF8;
 
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureAppConfiguration((context, config) =>

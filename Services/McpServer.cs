@@ -19,6 +19,7 @@ public class McpServer : IMcpServer
     private readonly IConfiguration _configuration;
     private readonly IGitService _gitService;
     private readonly JsonSerializerOptions _jsonOptions;
+    private readonly JsonSerializerOptions _outputJsonOptions;
     private bool _isRunning;
 
     public McpServer(ILogger<McpServer> logger, IConfiguration configuration, IGitService gitService)
@@ -30,8 +31,17 @@ public class McpServer : IMcpServer
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            WriteIndented = true
+            WriteIndented = false
         };
+        _outputJsonOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            WriteIndented = false
+        };
+
+        // Debug: Force explicit settings to ensure no indentation
+        _outputJsonOptions.WriteIndented = false;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken = default)
@@ -86,9 +96,20 @@ public class McpServer : IMcpServer
             var response = await HandleRequestAsync(request);
             if (response != null)
             {
-                var responseJson = JsonSerializer.Serialize(response, _jsonOptions);
-                Console.WriteLine(responseJson);
-                _logger.LogTrace("Sent response: {Response}", responseJson);
+                // Use minimal JSON serialization and force compact output
+                var responseJson = JsonSerializer.Serialize(response, new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                    WriteIndented = false
+                });
+
+                // Aggressively remove ALL whitespace that could cause line breaks
+                var compactJson = System.Text.RegularExpressions.Regex.Replace(responseJson, @"\s+", " ").Trim();
+
+                Console.WriteLine(compactJson);
+                Console.Out.Flush();
+                _logger.LogTrace("Sent response: {Response}", compactJson);
             }
         }
         catch (JsonException ex)
@@ -481,8 +502,18 @@ public class McpServer : IMcpServer
     private async Task SendErrorResponseAsync(object? id, int code, string message)
     {
         var response = CreateErrorResponse(id, code, message);
-        var responseJson = JsonSerializer.Serialize(response, _jsonOptions);
-        Console.WriteLine(responseJson);
+        var responseJson = JsonSerializer.Serialize(response, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            WriteIndented = false
+        });
+
+        // Aggressively remove ALL whitespace that could cause line breaks
+        var compactJson = System.Text.RegularExpressions.Regex.Replace(responseJson, @"\s+", " ").Trim();
+
+        Console.WriteLine(compactJson);
+        Console.Out.Flush();
         await Task.CompletedTask;
     }
 }
