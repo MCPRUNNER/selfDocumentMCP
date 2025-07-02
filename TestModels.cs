@@ -22,10 +22,10 @@ public class ModelTests
             }
         };
 
-        var json = JsonSerializer.Serialize(initRequest, new JsonSerializerOptions 
-        { 
+        var json = JsonSerializer.Serialize(initRequest, new JsonSerializerOptions
+        {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            WriteIndented = true 
+            WriteIndented = true
         });
 
         Console.WriteLine("Serialized InitializeRequest:");
@@ -39,10 +39,10 @@ public class ModelTests
             Params = initRequest
         };
 
-        var requestJson = JsonSerializer.Serialize(jsonRpcRequest, new JsonSerializerOptions 
-        { 
+        var requestJson = JsonSerializer.Serialize(jsonRpcRequest, new JsonSerializerOptions
+        {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            WriteIndented = true 
+            WriteIndented = true
         });
 
         Console.WriteLine("\nSerialized JSON-RPC Request:");

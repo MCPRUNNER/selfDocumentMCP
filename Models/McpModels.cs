@@ -8,13 +8,19 @@ public class JsonRpcRequest
     public string JsonRpc { get; set; } = "2.0";
 
     [JsonPropertyName("id")]
-    public object? Id { get; set; }
+    public object? Id
+    {
+        get; set;
+    }
 
     [JsonPropertyName("method")]
     public string Method { get; set; } = string.Empty;
 
     [JsonPropertyName("params")]
-    public object? Params { get; set; }
+    public object? Params
+    {
+        get; set;
+    }
 }
 
 public class JsonRpcResponse
@@ -23,25 +29,40 @@ public class JsonRpcResponse
     public string JsonRpc { get; set; } = "2.0";
 
     [JsonPropertyName("id")]
-    public object? Id { get; set; }
+    public object? Id
+    {
+        get; set;
+    }
 
     [JsonPropertyName("result")]
-    public object? Result { get; set; }
+    public object? Result
+    {
+        get; set;
+    }
 
     [JsonPropertyName("error")]
-    public JsonRpcError? Error { get; set; }
+    public JsonRpcError? Error
+    {
+        get; set;
+    }
 }
 
 public class JsonRpcError
 {
     [JsonPropertyName("code")]
-    public int Code { get; set; }
+    public int Code
+    {
+        get; set;
+    }
 
     [JsonPropertyName("message")]
     public string Message { get; set; } = string.Empty;
 
     [JsonPropertyName("data")]
-    public object? Data { get; set; }
+    public object? Data
+    {
+        get; set;
+    }
 }
 
 public class InitializeRequest
@@ -59,16 +80,25 @@ public class InitializeRequest
 public class ClientCapabilities
 {
     [JsonPropertyName("roots")]
-    public RootsCapability? Roots { get; set; }
+    public RootsCapability? Roots
+    {
+        get; set;
+    }
 
     [JsonPropertyName("sampling")]
-    public object? Sampling { get; set; }
+    public object? Sampling
+    {
+        get; set;
+    }
 }
 
 public class RootsCapability
 {
     [JsonPropertyName("listChanged")]
-    public bool ListChanged { get; set; }
+    public bool ListChanged
+    {
+        get; set;
+    }
 }
 
 public class ClientInfo
@@ -98,13 +128,22 @@ public class ServerCapabilities
     public object? Tools { get; set; } = new { };
 
     [JsonPropertyName("resources")]
-    public object? Resources { get; set; }
+    public object? Resources
+    {
+        get; set;
+    }
 
     [JsonPropertyName("prompts")]
-    public object? Prompts { get; set; }
+    public object? Prompts
+    {
+        get; set;
+    }
 
     [JsonPropertyName("logging")]
-    public object? Logging { get; set; }
+    public object? Logging
+    {
+        get; set;
+    }
 }
 
 public class ServerInfo
@@ -140,7 +179,10 @@ public class CallToolRequest
     public string Name { get; set; } = string.Empty;
 
     [JsonPropertyName("arguments")]
-    public Dictionary<string, object>? Arguments { get; set; }
+    public Dictionary<string, object>? Arguments
+    {
+        get; set;
+    }
 }
 
 public class CallToolResponse
@@ -149,7 +191,10 @@ public class CallToolResponse
     public ToolContent[] Content { get; set; } = Array.Empty<ToolContent>();
 
     [JsonPropertyName("isError")]
-    public bool IsError { get; set; }
+    public bool IsError
+    {
+        get; set;
+    }
 }
 
 public class ToolContent
@@ -167,18 +212,42 @@ public class GitCommitInfo
     public string Message { get; set; } = string.Empty;
     public string Author { get; set; } = string.Empty;
     public string AuthorEmail { get; set; } = string.Empty;
-    public DateTime Date { get; set; }
+    public DateTime Date
+    {
+        get; set;
+    }
     public List<string> ChangedFiles { get; set; } = new();
     public List<string> Changes { get; set; } = new();
 }
 
 public class DocumentationRequest
 {
-    public string? FilePath { get; set; }
-    public string? Branch1 { get; set; }
-    public string? Branch2 { get; set; }
-    public string? Commit1 { get; set; }
-    public string? Commit2 { get; set; }
-    public int? MaxCommits { get; set; }
-    public string? OutputFormat { get; set; }
+    public string? FilePath
+    {
+        get; set;
+    }
+    public string? Branch1
+    {
+        get; set;
+    }
+    public string? Branch2
+    {
+        get; set;
+    }
+    public string? Commit1
+    {
+        get; set;
+    }
+    public string? Commit2
+    {
+        get; set;
+    }
+    public int? MaxCommits
+    {
+        get; set;
+    }
+    public string? OutputFormat
+    {
+        get; set;
+    }
 }

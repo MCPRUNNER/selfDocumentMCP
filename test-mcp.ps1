@@ -7,17 +7,17 @@ Write-Host "Testing selfDocumentMCP Server" -ForegroundColor Green
 # Test 1: Initialize request
 $initRequest = @{
     jsonrpc = "2.0"
-    id = 1
-    method = "initialize"
-    params = @{
+    id      = 1
+    method  = "initialize"
+    params  = @{
         protocolVersion = "2024-11-05"
-        capabilities = @{
+        capabilities    = @{
             roots = @{
                 listChanged = $true
             }
         }
-        clientInfo = @{
-            name = "test-client"
+        clientInfo      = @{
+            name    = "test-client"
             version = "1.0.0"
         }
     }
@@ -29,9 +29,9 @@ Write-Host $initRequest
 # Test 2: Tools list request
 $toolsRequest = @{
     jsonrpc = "2.0"
-    id = 2
-    method = "tools/list"
-    params = @{}
+    id      = 2
+    method  = "tools/list"
+    params  = @{}
 } | ConvertTo-Json -Depth 10
 
 Write-Host "`nSending tools/list request:" -ForegroundColor Yellow
@@ -40,12 +40,12 @@ Write-Host $toolsRequest
 # Test 3: Generate documentation request
 $docRequest = @{
     jsonrpc = "2.0"
-    id = 3
-    method = "tools/call"
-    params = @{
-        name = "generate_git_documentation"
+    id      = 3
+    method  = "tools/call"
+    params  = @{
+        name      = "generate_git_documentation"
         arguments = @{
-            maxCommits = 10
+            maxCommits   = 10
             outputFormat = "markdown"
         }
     }

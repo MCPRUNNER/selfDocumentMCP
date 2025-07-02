@@ -48,7 +48,7 @@ public class McpServer : IMcpServer
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("MCP Server stopped by cancellation request");
+            _logger.LogDebug("MCP Server stopped by cancellation request");
         }
         catch (Exception ex)
         {
@@ -74,7 +74,7 @@ public class McpServer : IMcpServer
                 return;
             }
 
-            _logger.LogDebug("Received request: {Input}", input);
+            _logger.LogTrace("Received request: {Input}", input);
 
             var request = JsonSerializer.Deserialize<JsonRpcRequest>(input, _jsonOptions);
             if (request == null)
@@ -88,7 +88,7 @@ public class McpServer : IMcpServer
             {
                 var responseJson = JsonSerializer.Serialize(response, _jsonOptions);
                 Console.WriteLine(responseJson);
-                _logger.LogDebug("Sent response: {Response}", responseJson);
+                _logger.LogTrace("Sent response: {Response}", responseJson);
             }
         }
         catch (JsonException ex)
@@ -125,7 +125,7 @@ public class McpServer : IMcpServer
 
     private async Task<JsonRpcResponse> HandleInitializeAsync(JsonRpcRequest request)
     {
-        _logger.LogInformation("Handling initialize request");
+        _logger.LogDebug("Handling initialize request");
 
         var initResponse = new InitializeResponse
         {
@@ -153,7 +153,7 @@ public class McpServer : IMcpServer
 
     private async Task<JsonRpcResponse> HandleToolsListAsync(JsonRpcRequest request)
     {
-        _logger.LogInformation("Handling tools/list request");
+        _logger.LogDebug("Handling tools/list request");
 
         var tools = new[]
         {
@@ -234,7 +234,7 @@ public class McpServer : IMcpServer
 
     private async Task<JsonRpcResponse> HandleToolCallAsync(JsonRpcRequest request)
     {
-        _logger.LogInformation("Handling tools/call request");
+        _logger.LogDebug("Handling tools/call request");
 
         if (request.Params == null)
         {
@@ -326,10 +326,10 @@ public class McpServer : IMcpServer
 
             return new CallToolResponse
             {
-                Content = new[] { new ToolContent 
-                { 
-                    Type = "text", 
-                    Text = success ? $"Documentation successfully written to {filePath}" : "Failed to write documentation to file" 
+                Content = new[] { new ToolContent
+                {
+                    Type = "text",
+                    Text = success ? $"Documentation successfully written to {filePath}" : "Failed to write documentation to file"
                 } }
             };
         }
@@ -376,10 +376,10 @@ public class McpServer : IMcpServer
 
             return new CallToolResponse
             {
-                Content = new[] { new ToolContent 
-                { 
-                    Type = "text", 
-                    Text = success ? $"Branch comparison documentation successfully written to {filePath}" : "Failed to write documentation to file" 
+                Content = new[] { new ToolContent
+                {
+                    Type = "text",
+                    Text = success ? $"Branch comparison documentation successfully written to {filePath}" : "Failed to write documentation to file"
                 } }
             };
         }
@@ -426,10 +426,10 @@ public class McpServer : IMcpServer
 
             return new CallToolResponse
             {
-                Content = new[] { new ToolContent 
-                { 
-                    Type = "text", 
-                    Text = success ? $"Commit comparison documentation successfully written to {filePath}" : "Failed to write documentation to file" 
+                Content = new[] { new ToolContent
+                {
+                    Type = "text",
+                    Text = success ? $"Commit comparison documentation successfully written to {filePath}" : "Failed to write documentation to file"
                 } }
             };
         }

@@ -2,6 +2,16 @@
 
 A Model Context Protocol (MCP) Server that generates documentation from git logs, designed to be used as a Copilot Agent in VS Code.
 
+## ⚠️ Important Setup Note
+
+To ensure clean JSON-RPC communication, the MCP server should be run with:
+
+- Pre-built binaries (`--no-build` flag)
+- Production environment (`DOTNET_ENVIRONMENT=Production`)
+- Quiet verbosity (`--verbosity quiet`)
+
+This prevents build messages and logging output from interfering with the JSON-RPC protocol.
+
 ## Features
 
 This MCP server provides tools for:
@@ -14,6 +24,7 @@ This MCP server provides tools for:
 ## Output Formats
 
 The server supports multiple output formats:
+
 - **Markdown** (default): Human-readable markdown format
 - **HTML**: Rich HTML format with styling
 - **Text**: Plain text format
@@ -70,21 +81,25 @@ Once configured, you can use the following tools through Copilot:
 ## Tool Parameters
 
 ### generate_git_documentation
+
 - `maxCommits` (optional): Maximum number of commits to include (default: 50)
 - `outputFormat` (optional): Output format: markdown, html, or text (default: markdown)
 
 ### generate_git_documentation_to_file
+
 - `filePath` (required): Path where to save the documentation file
 - `maxCommits` (optional): Maximum number of commits to include (default: 50)
 - `outputFormat` (optional): Output format: markdown, html, or text (default: markdown)
 
 ### compare_branches_documentation
+
 - `branch1` (required): First branch name
 - `branch2` (required): Second branch name
 - `filePath` (required): Path where to save the documentation file
 - `outputFormat` (optional): Output format: markdown, html, or text (default: markdown)
 
 ### compare_commits_documentation
+
 - `commit1` (required): First commit hash
 - `commit2` (required): Second commit hash
 - `filePath` (required): Path where to save the documentation file
@@ -95,6 +110,7 @@ Once configured, you can use the following tools through Copilot:
 The server uses standard .NET configuration:
 
 ### appsettings.json
+
 ```json
 {
   "Logging": {
@@ -106,7 +122,7 @@ The server uses standard .NET configuration:
   "SelfDocumentMCP": {
     "DefaultMaxCommits": 50,
     "DefaultOutputFormat": "markdown",
-    "SupportedFormats": [ "markdown", "html", "text" ]
+    "SupportedFormats": ["markdown", "html", "text"]
   }
 }
 ```
@@ -124,7 +140,7 @@ The project is structured as follows:
 ## Dependencies
 
 - **LibGit2Sharp**: For git operations
-- **Microsoft.Extensions.*****: For logging, configuration, and dependency injection
+- **Microsoft.Extensions.\*\*\***: For logging, configuration, and dependency injection
 - **System.Text.Json**: For JSON serialization
 
 ## Development
@@ -132,12 +148,66 @@ The project is structured as follows:
 ### Logging
 
 The application uses structured logging with different levels:
+
 - Production: Information level
 - Development: Debug/Trace level
 
 ### Error Handling
 
 All tools include comprehensive error handling and return appropriate error responses when operations fail.
+
+## Troubleshooting
+
+### "Failed to parse message" warnings
+
+If you see warnings like:
+
+```
+[warning] Failed to parse message: "Using launch settings from..."
+[warning] Failed to parse message: "Building..."
+[warning] Failed to parse message: "info: Program[0]"
+```
+
+This indicates that build messages or logging output is interfering with JSON-RPC communication. To fix:
+
+1. **Build the project first**:
+
+   ```powershell
+   dotnet build --configuration Release
+   ```
+
+2. **Use the correct MCP configuration**:
+
+   ```json
+   {
+     "servers": {
+       "selfDocumentMCP": {
+         "type": "stdio",
+         "command": "dotnet",
+         "args": [
+           "run",
+           "--project",
+           "path/to/selfDocumentMCP.csproj",
+           "--no-build",
+           "--verbosity",
+           "quiet"
+         ],
+         "env": {
+           "DOTNET_ENVIRONMENT": "Production"
+         }
+       }
+     }
+   }
+   ```
+
+3. **Verify clean output** by testing manually:
+
+   ```powershell
+   $env:DOTNET_ENVIRONMENT="Production"
+   echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}' | dotnet run --no-build --verbosity quiet
+   ```
+
+   You should see only JSON output, no log messages.
 
 ## License
 

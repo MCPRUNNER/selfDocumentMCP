@@ -13,7 +13,11 @@ Add this to your VS Code settings or MCP configuration file:
   "mcpServers": {
     "selfDocumentMCP": {
       "command": "dotnet",
-      "args": ["run", "--project", "c:\\path\\to\\selfDocumentMCP\\selfDocumentMCP.csproj"],
+      "args": [
+        "run",
+        "--project",
+        "c:\\path\\to\\selfDocumentMCP\\selfDocumentMCP.csproj"
+      ],
       "env": {
         "DOTNET_ENVIRONMENT": "Development"
       }
@@ -27,21 +31,25 @@ Add this to your VS Code settings or MCP configuration file:
 Once configured, you can ask Copilot to:
 
 #### Generate Git Documentation
+
 ```
 @copilot Generate documentation from the last 20 git commits
 ```
 
 #### Save Documentation to File
+
 ```
 @copilot Generate git documentation and save it to docs/changes.md
 ```
 
 #### Compare Branches
+
 ```
 @copilot Compare changes between main and feature-branch and save to docs/branch-diff.md
 ```
 
 #### Compare Commits
+
 ```
 @copilot Compare changes between commit abc123 and def456 and save to docs/commit-diff.md
 ```
@@ -51,6 +59,7 @@ Once configured, you can ask Copilot to:
 ### JSON-RPC Examples
 
 #### Initialize the Server
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -72,6 +81,7 @@ Once configured, you can ask Copilot to:
 ```
 
 #### List Available Tools
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -82,6 +92,7 @@ Once configured, you can ask Copilot to:
 ```
 
 #### Generate Documentation
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -98,6 +109,7 @@ Once configured, you can ask Copilot to:
 ```
 
 #### Save Documentation to File
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -115,6 +127,7 @@ Once configured, you can ask Copilot to:
 ```
 
 #### Compare Branches
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -133,6 +146,7 @@ Once configured, you can ask Copilot to:
 ```
 
 #### Compare Commits
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -153,6 +167,7 @@ Once configured, you can ask Copilot to:
 ## Expected Responses
 
 ### Initialize Response
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -172,6 +187,7 @@ Once configured, you can ask Copilot to:
 ```
 
 ### Tools List Response
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -189,7 +205,7 @@ Once configured, you can ask Copilot to:
               "description": "Maximum number of commits to include (default: 50)"
             },
             "outputFormat": {
-              "type": "string", 
+              "type": "string",
               "description": "Output format: markdown, html, or text (default: markdown)"
             }
           }
@@ -202,7 +218,8 @@ Once configured, you can ask Copilot to:
 ```
 
 ### Tool Call Response
-```json
+
+````json
 {
   "jsonrpc": "2.0",
   "id": 3,
@@ -216,7 +233,7 @@ Once configured, you can ask Copilot to:
     "isError": false
   }
 }
-```
+````
 
 ## Troubleshooting
 
@@ -241,16 +258,19 @@ Enable debug logging by setting `DOTNET_ENVIRONMENT=Development` and check the c
 ## Output Examples
 
 ### Markdown Format (Default)
+
 - Clean, readable documentation
 - Formatted with headers, code blocks, and lists
 - Suitable for README files and documentation sites
 
 ### HTML Format
+
 - Rich formatting with CSS styling
 - Suitable for web viewing and reporting
 - Professional appearance with proper HTML structure
 
 ### Text Format
+
 - Plain text output
 - Good for logs and simple documentation
 - No formatting, just raw information

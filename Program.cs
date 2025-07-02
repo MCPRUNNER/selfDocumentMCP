@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using SelfDocumentMCP.Services;
 
 var host = Host.CreateDefaultBuilder(args)
@@ -15,23 +16,27 @@ var host = Host.CreateDefaultBuilder(args)
     {
         services.AddLogging(builder =>
         {
-            builder.AddConsole();
-            builder.SetMinimumLevel(LogLevel.Information);
+            builder.ClearProviders();
+            builder.AddConsole(options =>
+            {
+                options.LogToStandardErrorThreshold = LogLevel.Trace;
+            });
+            builder.SetMinimumLevel(LogLevel.Warning); // Reduce logging noise
         });
 
         services.AddSingleton<IGitService, GitService>();
         services.AddSingleton<IMcpServer, McpServer>();
     })
-    .UseConsoleLifetime()
+    .UseConsoleLifetime(options =>
+    {
+        options.SuppressStatusMessages = true;
+    })
     .Build();
-
-var logger = host.Services.GetRequiredService<ILogger<Program>>();
-logger.LogInformation("Starting selfDocumentMCP Server");
 
 try
 {
     var mcpServer = host.Services.GetRequiredService<IMcpServer>();
-    
+
     // Handle shutdown gracefully
     var cancellationTokenSource = new CancellationTokenSource();
     Console.CancelKeyPress += (_, e) =>
@@ -44,9 +49,9 @@ try
 }
 catch (Exception ex)
 {
-    logger.LogError(ex, "An error occurred while running the MCP server");
+    // Log to stderr
+    await Console.Error.WriteLineAsync($"Error: {ex.Message}");
     return 1;
 }
 
-logger.LogInformation("selfDocumentMCP Server stopped");
 return 0;

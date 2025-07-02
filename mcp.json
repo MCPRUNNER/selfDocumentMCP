@@ -2,9 +2,9 @@
   "mcpServers": {
     "selfDocumentMCP": {
       "command": "dotnet",
-      "args": ["run", "--project", "c:\\Users\\U00001\\source\\repos\\MCP\\selfDocumentMCP\\selfDocumentMCP.csproj"],
+      "args": ["run", "--project", "c:\\Users\\U00001\\source\\repos\\MCP\\selfDocumentMCP\\selfDocumentMCP.csproj", "--no-build", "--verbosity", "quiet"],
       "env": {
-        "DOTNET_ENVIRONMENT": "Development"
+        "DOTNET_ENVIRONMENT": "Production"
       }
     }
   }

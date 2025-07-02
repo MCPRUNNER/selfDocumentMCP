@@ -5,6 +5,7 @@
 The selfDocumentMCP project has been successfully developed as a Model Context Protocol (MCP) Server with the following components:
 
 ### Core Architecture
+
 - **Program.cs**: Application entry point with dependency injection and hosting
 - **Models/McpModels.cs**: Complete MCP protocol data models and JSON-RPC structures
 - **Services/GitService.cs**: Git operations and documentation generation service
@@ -13,6 +14,7 @@ The selfDocumentMCP project has been successfully developed as a Model Context P
 ### Key Features Implemented
 
 #### 1. MCP Protocol Support
+
 - ✅ JSON-RPC 2.0 protocol implementation
 - ✅ Initialize/initialized handshake
 - ✅ Tools list and tool calling
@@ -20,17 +22,20 @@ The selfDocumentMCP project has been successfully developed as a Model Context P
 - ✅ STDIO communication for VS Code integration
 
 #### 2. Git Documentation Tools
+
 - ✅ **generate_git_documentation**: Generate docs from recent commits
 - ✅ **generate_git_documentation_to_file**: Save documentation to file
 - ✅ **compare_branches_documentation**: Compare two branches
 - ✅ **compare_commits_documentation**: Compare two commits
 
 #### 3. Output Formats
+
 - ✅ **Markdown**: Clean, readable format (default)
-- ✅ **HTML**: Rich formatted output with CSS styling  
+- ✅ **HTML**: Rich formatted output with CSS styling
 - ✅ **Text**: Plain text format for logs
 
 #### 4. Error Handling & Validation
+
 - ✅ Repository validation
 - ✅ Branch and commit existence checks
 - ✅ File path validation and creation
@@ -38,6 +43,7 @@ The selfDocumentMCP project has been successfully developed as a Model Context P
 - ✅ Graceful error responses
 
 ### Configuration Files
+
 - ✅ **appsettings.json**: Production configuration
 - ✅ **appsettings.Development.json**: Development settings
 - ✅ **mcp.json**: VS Code MCP server configuration example
@@ -45,14 +51,16 @@ The selfDocumentMCP project has been successfully developed as a Model Context P
 - ✅ **.vscode/**: VS Code launch and task configurations
 
 ### Documentation
+
 - ✅ **README.md**: Complete project documentation
-- ✅ **EXAMPLES.md**: Integration and usage examples  
+- ✅ **EXAMPLES.md**: Integration and usage examples
 - ✅ **test-mcp.ps1**: PowerShell testing script
 - ✅ **TestModels.cs**: Model serialization verification
 
 ### Dependencies
+
 - ✅ LibGit2Sharp: Git repository operations
-- ✅ Microsoft.Extensions.*: Logging, configuration, DI
+- ✅ Microsoft.Extensions.\*: Logging, configuration, DI
 - ✅ System.Text.Json: JSON serialization
 - ✅ .NET 9.0: Modern .NET runtime
 
@@ -92,6 +100,7 @@ selfDocumentMCP/
 ## 🚀 Usage Instructions
 
 ### 1. Build and Run
+
 ```powershell
 # Restore packages and build
 dotnet restore; dotnet build
@@ -101,11 +110,13 @@ dotnet run
 ```
 
 ### 2. VS Code Integration
+
 1. Update VS Code MCP configuration with the provided `mcp.json`
 2. Restart VS Code
 3. Use Copilot to interact with the documentation tools
 
 ### 3. Manual Testing
+
 ```powershell
 # Run test script
 .\test-mcp.ps1
@@ -116,16 +127,17 @@ dotnet run
 
 ## 📋 Tool Capabilities
 
-| Tool | Description | Required Args | Optional Args |
-|------|-------------|---------------|---------------|
-| `generate_git_documentation` | Generate docs from git logs | None | `maxCommits`, `outputFormat` |
-| `generate_git_documentation_to_file` | Save docs to file | `filePath` | `maxCommits`, `outputFormat` |
-| `compare_branches_documentation` | Compare branches | `branch1`, `branch2`, `filePath` | `outputFormat` |
-| `compare_commits_documentation` | Compare commits | `commit1`, `commit2`, `filePath` | `outputFormat` |
+| Tool                                 | Description                 | Required Args                    | Optional Args                |
+| ------------------------------------ | --------------------------- | -------------------------------- | ---------------------------- |
+| `generate_git_documentation`         | Generate docs from git logs | None                             | `maxCommits`, `outputFormat` |
+| `generate_git_documentation_to_file` | Save docs to file           | `filePath`                       | `maxCommits`, `outputFormat` |
+| `compare_branches_documentation`     | Compare branches            | `branch1`, `branch2`, `filePath` | `outputFormat`               |
+| `compare_commits_documentation`      | Compare commits             | `commit1`, `commit2`, `filePath` | `outputFormat`               |
 
 ## ✅ Verification Steps
 
 The following have been tested and verified:
+
 - [x] Project builds successfully
 - [x] All dependencies resolve correctly
 - [x] MCP models serialize/deserialize properly
@@ -137,6 +149,7 @@ The following have been tested and verified:
 ## 🎯 Next Steps
 
 The project is ready for:
+
 1. **VS Code Integration**: Configure MCP and test with Copilot
 2. **Documentation Generation**: Use tools to create git documentation
 3. **Custom Enhancement**: Extend with additional git analysis features
