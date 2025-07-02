@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SelfDocumentMCP.Models;
 using SelfDocumentMCP.Services;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -96,19 +97,15 @@ public class McpServer : IMcpServer
             var response = await HandleRequestAsync(request);
             if (response != null)
             {
-                // Use minimal JSON serialization and force compact output
-                var responseJson = JsonSerializer.Serialize(response, new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                    WriteIndented = false
-                });
+                // Create truly compact JSON manually to ensure no formatting
+                var compactJson = CreateCompactJsonResponse(response);
 
-                // Aggressively remove ALL whitespace that could cause line breaks
-                var compactJson = System.Text.RegularExpressions.Regex.Replace(responseJson, @"\s+", " ").Trim();
+                // Write directly to stdout as UTF-8 bytes
+                var jsonBytes = Encoding.UTF8.GetBytes(compactJson);
+                await Console.OpenStandardOutput().WriteAsync(jsonBytes, 0, jsonBytes.Length);
+                await Console.OpenStandardOutput().WriteAsync(Encoding.UTF8.GetBytes("\n"), 0, 1);
+                await Console.OpenStandardOutput().FlushAsync();
 
-                Console.WriteLine(compactJson);
-                Console.Out.Flush();
                 _logger.LogTrace("Sent response: {Response}", compactJson);
             }
         }
@@ -502,18 +499,45 @@ public class McpServer : IMcpServer
     private async Task SendErrorResponseAsync(object? id, int code, string message)
     {
         var response = CreateErrorResponse(id, code, message);
-        var responseJson = JsonSerializer.Serialize(response, new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            WriteIndented = false
-        });
+        var compactJson = CreateCompactJsonResponse(response);
 
-        // Aggressively remove ALL whitespace that could cause line breaks
-        var compactJson = System.Text.RegularExpressions.Regex.Replace(responseJson, @"\s+", " ").Trim();
+        // Write directly to stdout as UTF-8 bytes
+        var jsonBytes = Encoding.UTF8.GetBytes(compactJson);
+        await Console.OpenStandardOutput().WriteAsync(jsonBytes, 0, jsonBytes.Length);
+        await Console.OpenStandardOutput().WriteAsync(Encoding.UTF8.GetBytes("\n"), 0, 1);
+        await Console.OpenStandardOutput().FlushAsync();
 
-        Console.WriteLine(compactJson);
-        Console.Out.Flush();
         await Task.CompletedTask;
+    }
+
+    private string CreateCompactJsonResponse(JsonRpcResponse response)
+    {
+        // Manually build compact JSON to bypass any system formatting
+        var result = "{";
+        result += $"\"jsonrpc\":\"{response.JsonRpc}\",";
+        result += $"\"id\":{(response.Id?.ToString() ?? "null")},";
+
+        if (response.Result != null)
+        {
+            result += "\"result\":";
+            result += JsonSerializer.Serialize(response.Result, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            }).Replace(" ", "").Replace("\r", "").Replace("\n", "").Replace("\t", "");
+        }
+
+        if (response.Error != null)
+        {
+            result += "\"error\":";
+            result += JsonSerializer.Serialize(response.Error, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            }).Replace(" ", "").Replace("\r", "").Replace("\n", "").Replace("\t", "");
+        }
+
+        result += "}";
+        return result;
     }
 }

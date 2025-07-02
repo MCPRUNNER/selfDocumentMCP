@@ -21,11 +21,14 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddLogging(builder =>
         {
             builder.ClearProviders();
-            builder.AddConsole(options =>
-            {
-                options.LogToStandardErrorThreshold = LogLevel.Trace;
-            });
-            builder.SetMinimumLevel(LogLevel.Warning); // Reduce logging noise
+
+            // Add file logging instead of console logging
+            var logPath = Path.Combine(Directory.GetCurrentDirectory(), "logs", "selfdocumentmcp.log");
+            Directory.CreateDirectory(Path.GetDirectoryName(logPath)!);
+
+            builder.AddFile(logPath, minimumLevel: LogLevel.Information);
+
+            builder.SetMinimumLevel(LogLevel.Information);
         });
 
         services.AddSingleton<IGitService, GitService>();

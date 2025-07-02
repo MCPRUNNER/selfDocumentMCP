@@ -147,7 +147,14 @@ The project is structured as follows:
 
 ### Logging
 
-The application uses structured logging with different levels:
+The application uses structured logging with file output to avoid interfering with JSON-RPC communication:
+
+- **Production**: Logs written to `logs/selfdocumentmcp.log` at Information level
+- **Development**: Logs written to `logs/selfdocumentmcp-dev.log` at Debug level
+- **Log Configuration**: Configurable via `appsettings.json` and environment-specific files
+- **Log Rotation**: Daily log files with automatic cleanup (via Serilog.Extensions.Logging.File)
+
+The logs directory is automatically created and ignored by git (.gitignore).
 
 - Production: Information level
 - Development: Debug/Trace level
