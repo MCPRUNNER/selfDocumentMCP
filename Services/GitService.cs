@@ -11,6 +11,12 @@ public interface IGitService
     Task<List<GitCommitInfo>> GetGitLogsBetweenCommitsAsync(string repositoryPath, string commit1, string commit2);
     Task<string> GenerateDocumentationAsync(List<GitCommitInfo> commits, string format = "markdown");
     Task<bool> WriteDocumentationToFileAsync(string content, string filePath);
+
+    // New methods for enhanced git operations
+    Task<List<GitCommitInfo>> GetRecentCommitsAsync(string repositoryPath, int count = 10);
+    Task<List<string>> GetChangedFilesBetweenCommitsAsync(string repositoryPath, string commit1, string commit2);
+    Task<string> GetDetailedDiffBetweenCommitsAsync(string repositoryPath, string commit1, string commit2, List<string>? specificFiles = null);
+    Task<GitCommitDiffInfo> GetCommitDiffInfoAsync(string repositoryPath, string commit1, string commit2);
 }
 
 public class GitService : IGitService
@@ -201,6 +207,167 @@ public class GitService : IGitService
         {
             _logger.LogError(ex, "Error writing documentation to file {FilePath}", filePath);
             return false;
+        }
+    }
+
+    public async Task<List<GitCommitInfo>> GetRecentCommitsAsync(string repositoryPath, int count = 10)
+    {
+        try
+        {
+            _logger.LogInformation("Getting {Count} recent commits from repository: {RepositoryPath}", count, repositoryPath);
+
+            var commits = new List<GitCommitInfo>();
+
+            using var repo = new Repository(repositoryPath);
+
+            // Get the most recent commits
+            var repoCommits = repo.Commits.Take(count);
+
+            foreach (var commit in repoCommits)
+            {
+                var commitInfo = await CreateGitCommitInfoAsync(repo, commit);
+                commits.Add(commitInfo);
+            }
+
+            _logger.LogInformation("Retrieved {Count} recent commits", commits.Count);
+            return commits;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting recent commits from {RepositoryPath}", repositoryPath);
+            throw;
+        }
+    }
+
+    public async Task<List<string>> GetChangedFilesBetweenCommitsAsync(string repositoryPath, string commit1, string commit2)
+    {
+        try
+        {
+            _logger.LogInformation("Getting changed files between commits {Commit1} and {Commit2}", commit1, commit2);
+
+            var changedFiles = new List<string>();
+
+            using var repo = new Repository(repositoryPath);
+            var commit1Obj = repo.Lookup<Commit>(commit1);
+            var commit2Obj = repo.Lookup<Commit>(commit2);
+
+            if (commit1Obj == null || commit2Obj == null)
+            {
+                throw new ArgumentException("One or both commits not found");
+            }
+
+            // Get the diff between the two commits
+            var changes = repo.Diff.Compare<TreeChanges>(commit1Obj.Tree, commit2Obj.Tree);
+
+            foreach (var change in changes)
+            {
+                changedFiles.Add(change.Path);
+            }
+
+            _logger.LogInformation("Retrieved {Count} changed files between commits", changedFiles.Count);
+            return await Task.FromResult(changedFiles);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting changed files between commits {Commit1} and {Commit2}", commit1, commit2);
+            throw;
+        }
+    }
+
+    public async Task<string> GetDetailedDiffBetweenCommitsAsync(string repositoryPath, string commit1, string commit2, List<string>? specificFiles = null)
+    {
+        try
+        {
+            _logger.LogInformation("Getting detailed diff between commits {Commit1} and {Commit2}", commit1, commit2);
+
+            var diffBuilder = new System.Text.StringBuilder();
+
+            using var repo = new Repository(repositoryPath);
+            var commit1Obj = repo.Lookup<Commit>(commit1);
+            var commit2Obj = repo.Lookup<Commit>(commit2);
+
+            if (commit1Obj == null || commit2Obj == null)
+            {
+                throw new ArgumentException("One or both commits not found");
+            }
+
+            // Get the diff between the two commits
+            var changes = repo.Diff.Compare<TreeChanges>(commit1Obj.Tree, commit2Obj.Tree);
+
+            foreach (var change in changes)
+            {
+                // If specific files are provided, only include changes for those files
+                if (specificFiles != null && !specificFiles.Contains(change.Path))
+                {
+                    continue;
+                }
+
+                diffBuilder.AppendLine($"diff --git a/{change.OldPath} b/{change.Path}");
+                diffBuilder.AppendLine($"--- a/{change.OldPath}");
+                diffBuilder.AppendLine($"+++ b/{change.Path}");
+                diffBuilder.AppendLine($"Status: {change.Status}");
+                diffBuilder.AppendLine();
+            }
+
+            _logger.LogInformation("Retrieved diff for {Count} files", changes.Count());
+            return await Task.FromResult(diffBuilder.ToString());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting detailed diff between commits {Commit1} and {Commit2}", commit1, commit2);
+            throw;
+        }
+    }
+
+    public async Task<GitCommitDiffInfo> GetCommitDiffInfoAsync(string repositoryPath, string commit1, string commit2)
+    {
+        try
+        {
+            _logger.LogInformation("Getting commit diff info between {Commit1} and {Commit2}", commit1, commit2);
+
+            var diffInfo = new GitCommitDiffInfo();
+
+            using var repo = new Repository(repositoryPath);
+            var commit1Obj = repo.Lookup<Commit>(commit1);
+            var commit2Obj = repo.Lookup<Commit>(commit2);
+
+            if (commit1Obj == null || commit2Obj == null)
+            {
+                throw new ArgumentException("One or both commits not found");
+            }
+
+            // Get the diff between the two commits
+            var changes = repo.Diff.Compare<TreeChanges>(commit1Obj.Tree, commit2Obj.Tree);
+
+            diffInfo.Commit1 = commit1;
+            diffInfo.Commit2 = commit2;
+
+            foreach (var change in changes)
+            {
+                switch (change.Status)
+                {
+                    case ChangeKind.Added:
+                        diffInfo.AddedFiles.Add(change.Path);
+                        break;
+                    case ChangeKind.Modified:
+                        diffInfo.ModifiedFiles.Add(change.Path);
+                        break;
+                    case ChangeKind.Deleted:
+                        diffInfo.DeletedFiles.Add(change.Path);
+                        break;
+                    case ChangeKind.Renamed:
+                        diffInfo.RenamedFiles.Add($"{change.OldPath} -> {change.Path}");
+                        break;
+                }
+            }
+
+            _logger.LogInformation("Retrieved diff info for {Count} files", diffInfo.TotalChanges);
+            return await Task.FromResult(diffInfo);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting commit diff info between {Commit1} and {Commit2}", commit1, commit2);
+            throw;
         }
     }
 

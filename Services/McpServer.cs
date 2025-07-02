@@ -238,6 +238,65 @@ public class McpServer : IMcpServer
                     },
                     required = new[] { "commit1", "commit2", "filePath" }
                 }
+            },
+            new Tool
+            {
+                Name = "get_recent_commits",
+                Description = "Get recent commits from the current repository",
+                InputSchema = new
+                {
+                    type = "object",
+                    properties = new
+                    {
+                        count = new { type = "integer", description = "Number of recent commits to retrieve (default: 10)" }
+                    }
+                }
+            },
+            new Tool
+            {
+                Name = "get_changed_files_between_commits",
+                Description = "Get list of files changed between two commits",
+                InputSchema = new
+                {
+                    type = "object",
+                    properties = new
+                    {
+                        commit1 = new { type = "string", description = "First commit hash" },
+                        commit2 = new { type = "string", description = "Second commit hash" }
+                    },
+                    required = new[] { "commit1", "commit2" }
+                }
+            },
+            new Tool
+            {
+                Name = "get_detailed_diff_between_commits",
+                Description = "Get detailed diff content between two commits",
+                InputSchema = new
+                {
+                    type = "object",
+                    properties = new
+                    {
+                        commit1 = new { type = "string", description = "First commit hash" },
+                        commit2 = new { type = "string", description = "Second commit hash" },
+                        specificFiles = new { type = "array", items = new { type = "string" }, description = "Optional: specific files to diff" }
+                    },
+                    required = new[] { "commit1", "commit2" }
+                }
+            },
+            new Tool
+            {
+                Name = "get_commit_diff_info",
+                Description = "Get comprehensive diff information between two commits including file changes and statistics",
+                InputSchema = new
+                {
+                    type = "object",
+                    properties = new
+                    {
+                        commit1 = new { type = "string", description = "First commit hash" },
+                        commit2 = new { type = "string", description = "Second commit hash" }
+                    },
+                    required = new[] { "commit1", "commit2" }
+                }
             }
         };
 
@@ -273,6 +332,10 @@ public class McpServer : IMcpServer
             "generate_git_documentation_to_file" => await HandleGenerateGitDocumentationToFileAsync(toolRequest),
             "compare_branches_documentation" => await HandleCompareBranchesDocumentationAsync(toolRequest),
             "compare_commits_documentation" => await HandleCompareCommitsDocumentationAsync(toolRequest),
+            "get_recent_commits" => await HandleGetRecentCommitsAsync(toolRequest),
+            "get_changed_files_between_commits" => await HandleGetChangedFilesBetweenCommitsAsync(toolRequest),
+            "get_detailed_diff_between_commits" => await HandleGetDetailedDiffBetweenCommitsAsync(toolRequest),
+            "get_commit_diff_info" => await HandleGetCommitDiffInfoAsync(toolRequest),
             _ => new CallToolResponse
             {
                 IsError = true,
@@ -454,6 +517,167 @@ public class McpServer : IMcpServer
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error generating commit comparison documentation");
+            return new CallToolResponse
+            {
+                IsError = true,
+                Content = new[] { new ToolContent { Type = "text", Text = $"Error: {ex.Message}" } }
+            };
+        }
+    }
+
+    private async Task<CallToolResponse> HandleGetRecentCommitsAsync(CallToolRequest toolRequest)
+    {
+        try
+        {
+            var workspaceRoot = Environment.CurrentDirectory;
+            var count = GetArgumentValue<int>(toolRequest.Arguments, "count", 10);
+
+            var commits = await _gitService.GetRecentCommitsAsync(workspaceRoot, count);
+            var commitSummary = string.Join("\n", commits.Select(c =>
+                $"• {c.Hash[..8]} - {c.Message.Split('\n')[0]} ({c.Author}, {c.Date:yyyy-MM-dd})"));
+
+            return new CallToolResponse
+            {
+                Content = new[] { new ToolContent { Type = "text", Text = $"Recent {count} commits:\n\n{commitSummary}" } }
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting recent commits");
+            return new CallToolResponse
+            {
+                IsError = true,
+                Content = new[] { new ToolContent { Type = "text", Text = $"Error: {ex.Message}" } }
+            };
+        }
+    }
+
+    private async Task<CallToolResponse> HandleGetChangedFilesBetweenCommitsAsync(CallToolRequest toolRequest)
+    {
+        try
+        {
+            var commit1 = GetArgumentValue<string>(toolRequest.Arguments, "commit1", "");
+            var commit2 = GetArgumentValue<string>(toolRequest.Arguments, "commit2", "");
+
+            if (string.IsNullOrEmpty(commit1) || string.IsNullOrEmpty(commit2))
+            {
+                return new CallToolResponse
+                {
+                    IsError = true,
+                    Content = new[] { new ToolContent { Type = "text", Text = "commit1 and commit2 arguments are required" } }
+                };
+            }
+
+            var workspaceRoot = Environment.CurrentDirectory;
+            var changedFiles = await _gitService.GetChangedFilesBetweenCommitsAsync(workspaceRoot, commit1, commit2);
+            var filesList = string.Join("\n", changedFiles.Select(f => $"• {f}"));
+
+            return new CallToolResponse
+            {
+                Content = new[] { new ToolContent { Type = "text", Text = $"Files changed between {commit1[..8]} and {commit2[..8]}:\n\n{filesList}" } }
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting changed files between commits");
+            return new CallToolResponse
+            {
+                IsError = true,
+                Content = new[] { new ToolContent { Type = "text", Text = $"Error: {ex.Message}" } }
+            };
+        }
+    }
+
+    private async Task<CallToolResponse> HandleGetDetailedDiffBetweenCommitsAsync(CallToolRequest toolRequest)
+    {
+        try
+        {
+            var commit1 = GetArgumentValue<string>(toolRequest.Arguments, "commit1", "");
+            var commit2 = GetArgumentValue<string>(toolRequest.Arguments, "commit2", "");
+
+            if (string.IsNullOrEmpty(commit1) || string.IsNullOrEmpty(commit2))
+            {
+                return new CallToolResponse
+                {
+                    IsError = true,
+                    Content = new[] { new ToolContent { Type = "text", Text = "commit1 and commit2 arguments are required" } }
+                };
+            }
+
+            var workspaceRoot = Environment.CurrentDirectory;
+            var specificFilesArg = GetArgumentValue<object?>(toolRequest.Arguments, "specificFiles", null);
+            List<string>? specificFiles = null;
+
+            if (specificFilesArg is JsonElement jsonArray && jsonArray.ValueKind == JsonValueKind.Array)
+            {
+                specificFiles = jsonArray.EnumerateArray().Select(e => e.GetString() ?? "").Where(s => !string.IsNullOrEmpty(s)).ToList();
+            }
+
+            var detailedDiff = await _gitService.GetDetailedDiffBetweenCommitsAsync(workspaceRoot, commit1, commit2, specificFiles);
+
+            return new CallToolResponse
+            {
+                Content = new[] { new ToolContent { Type = "text", Text = detailedDiff } }
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting detailed diff between commits");
+            return new CallToolResponse
+            {
+                IsError = true,
+                Content = new[] { new ToolContent { Type = "text", Text = $"Error: {ex.Message}" } }
+            };
+        }
+    }
+
+    private async Task<CallToolResponse> HandleGetCommitDiffInfoAsync(CallToolRequest toolRequest)
+    {
+        try
+        {
+            var commit1 = GetArgumentValue<string>(toolRequest.Arguments, "commit1", "");
+            var commit2 = GetArgumentValue<string>(toolRequest.Arguments, "commit2", "");
+
+            if (string.IsNullOrEmpty(commit1) || string.IsNullOrEmpty(commit2))
+            {
+                return new CallToolResponse
+                {
+                    IsError = true,
+                    Content = new[] { new ToolContent { Type = "text", Text = "commit1 and commit2 arguments are required" } }
+                };
+            }
+
+            var workspaceRoot = Environment.CurrentDirectory;
+            var diffInfo = await _gitService.GetCommitDiffInfoAsync(workspaceRoot, commit1, commit2);
+
+            var summary = $"Commit Diff Summary ({commit1[..8]} → {commit2[..8]}):\n\n" +
+                         $"📊 **Statistics:**\n" +
+                         $"• Added files: {diffInfo.AddedFiles.Count}\n" +
+                         $"• Modified files: {diffInfo.ModifiedFiles.Count}\n" +
+                         $"• Deleted files: {diffInfo.DeletedFiles.Count}\n" +
+                         $"• Renamed files: {diffInfo.RenamedFiles.Count}\n" +
+                         $"• Total changes: {diffInfo.TotalChanges}\n\n";
+
+            if (diffInfo.AddedFiles.Any())
+                summary += $"➕ **Added Files:**\n{string.Join("\n", diffInfo.AddedFiles.Select(f => $"  • {f}"))}\n\n";
+
+            if (diffInfo.ModifiedFiles.Any())
+                summary += $"✏️ **Modified Files:**\n{string.Join("\n", diffInfo.ModifiedFiles.Select(f => $"  • {f}"))}\n\n";
+
+            if (diffInfo.DeletedFiles.Any())
+                summary += $"🗑️ **Deleted Files:**\n{string.Join("\n", diffInfo.DeletedFiles.Select(f => $"  • {f}"))}\n\n";
+
+            if (diffInfo.RenamedFiles.Any())
+                summary += $"📝 **Renamed Files:**\n{string.Join("\n", diffInfo.RenamedFiles.Select(f => $"  • {f}"))}\n\n";
+
+            return new CallToolResponse
+            {
+                Content = new[] { new ToolContent { Type = "text", Text = summary } }
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting commit diff info");
             return new CallToolResponse
             {
                 IsError = true,
