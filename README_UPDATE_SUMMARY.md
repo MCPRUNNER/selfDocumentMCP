@@ -87,4 +87,4 @@ The updated README.md now provides:
 - **Performance considerations** to help users optimize their experience
 - **Professional presentation** that effectively showcases the project's capabilities
 
-This comprehensive update ensures users can quickly understand, configure, and effectively use all features of the selfDocumentMCP server, with special emphasis on the powerful new commit search capabilities.
+This comprehensive update ensures users can quickly understand, configure, and effectively use all features of the GitVisionMCP server, with special emphasis on the powerful new commit search capabilities.

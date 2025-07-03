@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace SelfDocumentMCP.Models;
+namespace GitVisionMCP.Models;
 
 public class JsonRpcRequest
 {
@@ -149,7 +149,7 @@ public class ServerCapabilities
 public class ServerInfo
 {
     [JsonPropertyName("name")]
-    public string Name { get; set; } = "selfDocumentMCP";
+    public string Name { get; set; } = "GitVisionMCP";
 
     [JsonPropertyName("version")]
     public string Version { get; set; } = "1.0.0";

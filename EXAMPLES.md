@@ -1,6 +1,6 @@
 # MCP Integration Examples
 
-This document shows comprehensive examples of how to integrate and use the selfDocumentMCP server with VS Code and Copilot, including **advanced commit search capabilities** and remote branch features.
+This document shows comprehensive examples of how to integrate and use the GitVisionMCP server with VS Code and Copilot, including **advanced commit search capabilities** and remote branch features.
 
 ## 🔥 Featured: Advanced Commit Search
 
@@ -29,12 +29,12 @@ Add this to your VS Code MCP configuration file:
 ```json
 {
   "mcpServers": {
-    "selfDocumentMCP": {
+    "GitVisionMCP": {
       "command": "dotnet",
       "args": [
         "run",
         "--project",
-        "c:\\path\\to\\selfDocumentMCP\\selfDocumentMCP.csproj",
+        "c:\\path\\to\\GitVisionMCP\\GitVisionMCP.csproj",
         "--no-build",
         "--verbosity",
         "quiet"
@@ -54,12 +54,12 @@ For development and debugging:
 ```json
 {
   "mcpServers": {
-    "selfDocumentMCP": {
+    "GitVisionMCP": {
       "command": "dotnet",
       "args": [
         "run",
         "--project",
-        "c:\\path\\to\\selfDocumentMCP\\selfDocumentMCP.csproj"
+        "c:\\path\\to\\GitVisionMCP\\GitVisionMCP.csproj"
       ],
       "env": {
         "DOTNET_ENVIRONMENT": "Development"
@@ -608,7 +608,7 @@ Once configured, you can use natural language commands with Copilot:
       "logging": {}
     },
     "serverInfo": {
-      "name": "selfDocumentMCP",
+      "name": "GitVisionMCP",
       "version": "1.0.0"
     }
   }
@@ -780,7 +780,7 @@ Write-Host "Testing complete!" -ForegroundColor Green
 Run the test script:
 
 ```powershell
-.\test-mcp.ps1 -ProjectPath "path\to\selfDocumentMCP.csproj"
+.\test-mcp.ps1 -ProjectPath "path\to\GitVisionMCP.csproj"
 ```
 
 ## Troubleshooting
@@ -878,7 +878,7 @@ Run the test script:
 }
 ```
 
-Check logs in `logs/selfdocumentmcp-dev.log` for detailed error information.
+Check logs in `logs/gitvisionmcp-dev.log` for detailed error information.
 
 #### Manual Testing Commands
 

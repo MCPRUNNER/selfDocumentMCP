@@ -7,7 +7,7 @@ Total commits: 6
 
 ### Project Overview
 
-The **selfDocumentMCP** project represents the development of a sophisticated Model Context Protocol (MCP) server that enables automated documentation generation and git repository analysis. This tool serves as a bridge between development workflows and AI-powered documentation, specifically designed for integration with VS Code Copilot.
+The **GitVisionMCP** project represents the development of a sophisticated Model Context Protocol (MCP) server that enables automated documentation generation and git repository analysis. This tool serves as a bridge between development workflows and AI-powered documentation, specifically designed for integration with VS Code Copilot.
 
 ### Key Business Value
 

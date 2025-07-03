@@ -1,4 +1,4 @@
-# selfDocumentMCP
+# GitVisionMCP
 
 A comprehensive Model Context Protocol (MCP) Server that provides advanced git analysis and documentation tools, including powerful commit search capabilities. Designed to be used as a Copilot Agent in VS Code for comprehensive repository analysis and documentation generation.
 
@@ -193,9 +193,9 @@ Create or update your MCP configuration to include this server. Here are example
 ```json
 {
   "mcpServers": {
-    "selfDocumentMCP": {
+    "GitVisionMCP": {
       "command": "dotnet",
-      "args": ["run", "--project", "c:\\path\\to\\selfDocumentMCP.csproj"],
+      "args": ["run", "--project", "c:\\path\\to\\GitVisionMCP.csproj"],
       "env": {
         "DOTNET_ENVIRONMENT": "Development"
       }
@@ -209,12 +209,12 @@ Create or update your MCP configuration to include this server. Here are example
 ```json
 {
   "mcpServers": {
-    "selfDocumentMCP": {
+    "GitVisionMCP": {
       "command": "dotnet",
       "args": [
         "run",
         "--project",
-        "c:\\path\\to\\selfDocumentMCP.csproj",
+        "c:\\path\\to\\GitVisionMCP.csproj",
         "--no-build",
         "--verbosity",
         "quiet"
@@ -556,7 +556,7 @@ The server uses standard .NET configuration with environment-specific settings:
   "Logging": {
     "LogLevel": {
       "Default": "Information",
-      "SelfDocumentMCP": "Information"
+      "GitVisionMCP": "Information"
     }
   },
   "Serilog": {
@@ -566,7 +566,7 @@ The server uses standard .NET configuration with environment-specific settings:
       {
         "Name": "File",
         "Args": {
-          "path": "logs/selfdocumentmcp.log",
+          "path": "logs/gitvisionmcp.log",
           "rollingInterval": "Day",
           "retainedFileCountLimit": 7,
           "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
@@ -574,7 +574,7 @@ The server uses standard .NET configuration with environment-specific settings:
       }
     ]
   },
-  "SelfDocumentMCP": {
+  "GitVisionMCP": {
     "DefaultMaxCommits": 50,
     "DefaultOutputFormat": "markdown",
     "SupportedFormats": ["markdown", "html", "text"],
@@ -590,7 +590,7 @@ The server uses standard .NET configuration with environment-specific settings:
   "Logging": {
     "LogLevel": {
       "Default": "Debug",
-      "SelfDocumentMCP": "Debug"
+      "GitVisionMCP": "Debug"
     }
   },
   "Serilog": {
@@ -599,7 +599,7 @@ The server uses standard .NET configuration with environment-specific settings:
       {
         "Name": "File",
         "Args": {
-          "path": "logs/selfdocumentmcp-dev.log",
+          "path": "logs/gitvisionmcp-dev.log",
           "rollingInterval": "Day",
           "retainedFileCountLimit": 7,
           "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
@@ -643,8 +643,8 @@ The project follows clean architecture principles:
 
 The application uses Serilog with file output to avoid interfering with JSON-RPC communication:
 
-- **Production**: Logs written to `logs/selfdocumentmcp.log` at Information level
-- **Development**: Logs written to `logs/selfdocumentmcp-dev.log` at Debug level
+- **Production**: Logs written to `logs/gitvisionmcp.log` at Information level
+- **Development**: Logs written to `logs/gitvisionmcp-dev.log` at Debug level
 - **Log Rotation**: Daily log files with 7-day retention
 - **Output Isolation**: No console logging to ensure clean JSON-RPC communication
 
@@ -672,8 +672,8 @@ echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}' | dotnet run -
 echo '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' | dotnet run --no-build --verbosity quiet
 ```
 
-- **Production**: Logs written to `logs/selfdocumentmcp.log` at Information level
-- **Development**: Logs written to `logs/selfdocumentmcp-dev.log` at Debug level
+- **Production**: Logs written to `logs/gitvisionmcp.log` at Information level
+- **Development**: Logs written to `logs/gitvisionmcp-dev.log` at Debug level
 - **Log Configuration**: Configurable via `appsettings.json` and environment-specific files
 - **Log Rotation**: Daily log files with automatic cleanup (via Serilog.Extensions.Logging.File)
 
@@ -709,12 +709,12 @@ If you see warnings like:
    ```json
    {
      "mcpServers": {
-       "selfDocumentMCP": {
+       "GitVisionMCP": {
          "command": "dotnet",
          "args": [
            "run",
            "--project",
-           "c:\\path\\to\\selfDocumentMCP.csproj",
+           "c:\\path\\to\\GitVisionMCP.csproj",
            "--no-build",
            "--verbosity",
            "quiet"
@@ -812,7 +812,7 @@ $env:DOTNET_ENVIRONMENT="Development"
 dotnet run
 ```
 
-This enables detailed logging to `logs/selfdocumentmcp-dev.log`.
+This enables detailed logging to `logs/gitvisionmcp-dev.log`.
 
 ## Best Practices
 
