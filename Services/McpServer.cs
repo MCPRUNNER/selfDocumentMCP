@@ -374,6 +374,21 @@ public class McpServer : IMcpServer
                     },
                     required = new[] { "branch1", "branch2", "filePath" }
                 }
+            },
+            new Tool
+            {
+                Name = "search_commits_for_string",
+                Description = "Search all commits for a specific string and return commit details, file names, and line matches",
+                InputSchema = new
+                {
+                    type = "object",
+                    properties = new
+                    {
+                        searchString = new { type = "string", description = "The string to search for in commit messages and file contents" },
+                        maxCommits = new { type = "integer", description = "Maximum number of commits to search through (default: 100)" }
+                    },
+                    required = new[] { "searchString" }
+                }
             }
         };
 
@@ -419,6 +434,7 @@ public class McpServer : IMcpServer
             "get_all_branches" => await HandleGetAllBranchesAsync(toolRequest),
             "fetch_from_remote" => await HandleFetchFromRemoteAsync(toolRequest),
             "compare_branches_with_remote" => await HandleCompareBranchesWithRemoteAsync(toolRequest),
+            "search_commits_for_string" => await HandleSearchCommitsForStringAsync(toolRequest),
             _ => new CallToolResponse
             {
                 IsError = true,
@@ -918,6 +934,104 @@ public class McpServer : IMcpServer
                 Content = new[] { new ToolContent { Type = "text", Text = $"Error: {ex.Message}" } }
             };
         }
+    }
+
+    private async Task<CallToolResponse> HandleSearchCommitsForStringAsync(CallToolRequest toolRequest)
+    {
+        try
+        {
+            var searchString = GetArgumentValue<string>(toolRequest.Arguments, "searchString", "");
+
+            if (string.IsNullOrEmpty(searchString))
+            {
+                return new CallToolResponse
+                {
+                    IsError = true,
+                    Content = new[] { new ToolContent { Type = "text", Text = "searchString argument is required" } }
+                };
+            }
+
+            var workspaceRoot = Environment.CurrentDirectory;
+            var maxCommits = GetArgumentValue<int>(toolRequest.Arguments, "maxCommits", 100);
+
+            var searchResults = await _gitService.SearchCommitsForStringAsync(workspaceRoot, searchString, maxCommits);
+
+            if (!string.IsNullOrEmpty(searchResults.ErrorMessage))
+            {
+                return new CallToolResponse
+                {
+                    IsError = true,
+                    Content = new[] { new ToolContent { Type = "text", Text = $"Search error: {searchResults.ErrorMessage}" } }
+                };
+            }
+
+            // Format the results as a comprehensive text response
+            var resultText = FormatSearchResults(searchResults);
+
+            return new CallToolResponse
+            {
+                Content = new[] { new ToolContent { Type = "text", Text = resultText } }
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error searching commits for string");
+            return new CallToolResponse
+            {
+                IsError = true,
+                Content = new[] { new ToolContent { Type = "text", Text = $"Error: {ex.Message}" } }
+            };
+        }
+    }
+
+    private string FormatSearchResults(CommitSearchResponse searchResults)
+    {
+        var sb = new System.Text.StringBuilder();
+
+        sb.AppendLine($"# Search Results for: '{searchResults.SearchString}'");
+        sb.AppendLine();
+        sb.AppendLine($"**Summary:**");
+        sb.AppendLine($"- Total commits searched: {searchResults.TotalCommitsSearched}");
+        sb.AppendLine($"- Commits with matches: {searchResults.TotalMatchingCommits}");
+        sb.AppendLine($"- Total line matches: {searchResults.TotalLineMatches}");
+        sb.AppendLine();
+
+        if (!searchResults.Results.Any())
+        {
+            sb.AppendLine("No matches found.");
+            return sb.ToString();
+        }
+
+        sb.AppendLine("## Matching Commits");
+        sb.AppendLine();
+
+        foreach (var result in searchResults.Results.OrderByDescending(r => r.Timestamp))
+        {
+            sb.AppendLine($"### Commit: {result.CommitHash[..8]}");
+            sb.AppendLine($"**Author:** {result.Author}");
+            sb.AppendLine($"**Date:** {result.Timestamp:yyyy-MM-dd HH:mm:ss}");
+            sb.AppendLine($"**Message:** {result.CommitMessage}");
+            sb.AppendLine($"**Total matches in this commit:** {result.TotalMatches}");
+            sb.AppendLine();
+
+            foreach (var fileMatch in result.FileMatches)
+            {
+                sb.AppendLine($"#### File: {fileMatch.FileName}");
+                sb.AppendLine($"**Matches in this file:** {fileMatch.LineMatches.Count}");
+                sb.AppendLine();
+
+                foreach (var lineMatch in fileMatch.LineMatches)
+                {
+                    sb.AppendLine($"- **Line {lineMatch.LineNumber}:** `{lineMatch.LineContent}`");
+                }
+                sb.AppendLine();
+            }
+
+            sb.AppendLine("---");
+            sb.AppendLine();
+        }
+
+        return sb.ToString();
     }
 
     private async Task<CallToolResponse> HandleGetFileLineDiffBetweenCommitsAsync(CallToolRequest toolRequest)

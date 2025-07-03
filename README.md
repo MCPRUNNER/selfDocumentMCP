@@ -1,6 +1,40 @@
 # selfDocumentMCP
 
-A comprehensive Model Context Protocol (MCP) Server that generates documentation from git logs and provides advanced git analysis tools, designed to be used as a Copilot Agent in VS Code.
+A comprehensive Model Context Protocol (MCP) Server that provides advanced git analysis and documentation tools, including powerful commit search capabilities. Designed to be used as a Copilot Agent in VS Code for comprehensive repository analysis and documentation generation.
+
+## 🔥 Key Capabilities
+
+- **📝 Documentation Generation**: Create comprehensive documentation from git logs
+- **🔍 Commit Search**: Search across all commits for specific strings with detailed match results
+- **🌿 Branch Analysis**: Compare branches (local and remote) with detailed diff information
+- **📊 Historical Analysis**: Analyze changes between commits with line-by-line precision
+- **🌐 Remote Support**: Full support for remote repositories and branch comparison
+- **🎯 Precision Tools**: Get exact file changes, line diffs, and comprehensive statistics
+
+## 🆕 What's New - Commit Search Tool
+
+**Latest Addition**: Powerful commit search functionality that revolutionizes how you explore repository history:
+
+✅ **Deep Search Capabilities**
+
+- Search through commit messages AND file contents simultaneously
+- Case-insensitive search finds matches regardless of text case
+- Automatic binary file filtering for optimal performance
+
+✅ **Comprehensive Results**
+
+- Exact line numbers and full line content for every match
+- Commit metadata: hash, author, timestamp, and message
+- File-by-file breakdown showing exactly where matches occur
+- Summary statistics: total commits searched, matching commits, total line matches
+
+✅ **Practical Applications**
+
+- **Bug Tracking**: `"Find all commits mentioning 'authentication error'"`
+- **Feature History**: `"Search for 'user registration' across all development"`
+- **Security Audits**: `"Look for 'password' or 'secret' in commit history"`
+- **Code Archaeology**: `"Find all references to deprecated API functions"`
+- **Documentation**: `"Search for 'TODO' comments across the project"`
 
 ## ⚠️ Important Setup Note
 
@@ -14,7 +48,33 @@ This prevents build messages and logging output from interfering with the JSON-R
 
 ## Features
 
-This MCP server provides comprehensive git documentation and analysis tools:
+### 🛠️ Complete Tool Suite (14 Tools Available)
+
+This MCP server provides comprehensive git documentation and analysis capabilities through 14 specialized tools:
+
+**📝 Documentation & Analysis (6 tools)**
+
+- Documentation generation from git logs
+- Branch and commit comparison with detailed analysis
+- Remote repository integration and synchronization
+- Historical change tracking and statistics
+
+**🔍 Search & Discovery (2 tools)**
+
+- Comprehensive commit search across messages and file contents
+- Intelligent file change detection between commits
+
+**🌿 Branch Management (4 tools)**
+
+- Local and remote branch discovery
+- Cross-repository branch comparison
+- Remote fetch and synchronization operations
+- Multi-branch analysis and reporting
+
+**⚡ Advanced Analysis (2 tools)**
+
+- Line-by-line diff analysis for specific files
+- Recent commit retrieval with detailed metadata
 
 ### Core Documentation Tools
 
@@ -34,6 +94,27 @@ This MCP server provides comprehensive git documentation and analysis tools:
 - **get_detailed_diff_between_commits**: Get detailed diff content between commits
 - **get_commit_diff_info**: Get comprehensive diff statistics and file changes
 - **get_file_line_diff_between_commits**: 🆕 Get line-by-line diff for a specific file between two commits
+- **search_commits_for_string**: 🆕 Search all commits for a specific string and return detailed match information
+
+### Commit Search Tool
+
+The new **search_commits_for_string** tool provides comprehensive commit searching capabilities:
+
+- **Search commit messages**: Find commits containing specific text in their messages
+- **Search file contents**: Search through all files in each commit for the specified string
+- **Detailed match information**: Returns commit hash, timestamp, author, line numbers, and full line content
+- **File-by-file breakdown**: Shows exactly which files contain matches and where
+- **Case-insensitive search**: Finds matches regardless of case
+
+#### Search Results Include:
+
+- Commit hash (short form)
+- Commit timestamp
+- Author information
+- Commit message
+- File names containing matches
+- Line numbers where matches occur
+- Full line content showing the match in context
 
 ### Branch Discovery and Remote Support
 
@@ -150,11 +231,64 @@ Create or update your MCP configuration to include this server. Here are example
 
 Once configured, you can use natural language commands with Copilot:
 
+**📝 Documentation Generation:**
+
 - "Generate documentation from the last 20 commits"
+- "Create a release summary comparing main with release/v2.0"
+- "Generate project history and save to docs/changelog.md"
+
+**🔍 Search & Discovery:**
+
+- "Search all commits for 'authentication' to find related changes"
+- "Find all commits that mention 'bug fix' in messages or code"
+- "Look for 'TODO' comments across the entire commit history"
+- "Search for 'deprecated' functions and show me where they were used"
+
+**🌿 Branch Analysis:**
+
 - "Compare my feature branch with origin/main and save to analysis.md"
 - "Show me what files changed between these two commits"
 - "List all remote branches in this repository"
 - "Fetch latest changes from origin and compare branches"
+
+**⚡ Advanced Analysis:**
+
+- "Get line-by-line diff for Services/GitService.cs between two commits"
+- "Show me recent commits with detailed change information"
+
+## 🚀 Quick Start
+
+### Test the Search Feature
+
+Once the MCP server is running, try these commands to test the powerful search functionality:
+
+```bash
+# Search for "authentication" across all commits
+@copilot Search all commits for "authentication" and show me the results
+
+# Find bug-related commits
+@copilot Find all commits that mention "fix" in messages or code
+
+# Search for specific API usage
+@copilot Look for "HttpClient" usage across commit history
+```
+
+### Test Documentation Generation
+
+```bash
+# Generate recent commit documentation
+@copilot Generate documentation from the last 10 commits
+
+# Compare branches
+@copilot Compare main branch with origin/main and save analysis to sync-check.md
+```
+
+### Manual Testing (JSON-RPC)
+
+```bash
+# Test the search tool directly
+echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"search_commits_for_string","arguments":{"searchString":"git","maxCommits":20}}}' | dotnet run --no-build --verbosity quiet
+```
 
 ## Tool Reference
 
@@ -286,6 +420,30 @@ Gets line-by-line diff for a specific file between two commits.
 
 **Returns:** Detailed line-by-line comparison with syntax highlighting showing added, deleted, and context lines
 
+#### search_commits_for_string
+
+Searches all commits for a specific string and returns detailed match information.
+
+**Parameters:**
+
+- `searchString` (required): The string to search for in commit messages and file contents
+- `maxCommits` (optional): Maximum number of commits to search through (default: 100)
+
+**Returns:** Detailed information about each match, including:
+
+- Commit hash, timestamp, author, and message
+- File names containing matches
+- Line numbers where matches occur
+- Full line content showing the match in context
+- Summary statistics (total commits searched, matching commits, total line matches)
+
+**Search Capabilities:**
+
+- Case-insensitive search through commit messages and file contents
+- Searches all text files in each commit (automatically skips binary files)
+- Returns comprehensive match details with exact line numbers and content
+- Configurable search depth to control performance on large repositories
+
 ### Branch Discovery Tools
 
 #### get_local_branches
@@ -365,6 +523,27 @@ Create comprehensive project history documentation.
 ```
 
 Useful for forks and understanding differences from upstream repositories.
+
+### 7. Code and Commit Search
+
+```
+"Search all commits for 'authentication' to find related changes"
+```
+
+Perfect for finding all instances where specific features, bugs, or keywords were addressed across the project history. The search will return:
+
+- Which commits mention the term
+- Which files contain the term
+- Exact line numbers and content
+- Commit timestamps and authors
+
+This is especially useful for:
+
+- **Bug tracking**: Find all commits related to a specific bug or error message
+- **Feature history**: Trace the development of a specific feature across time
+- **Code review**: Find all instances of deprecated functions or patterns
+- **Security audits**: Search for sensitive patterns or keywords
+- **Documentation**: Locate all references to specific APIs or configurations
 
 ## Configuration
 

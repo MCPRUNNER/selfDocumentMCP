@@ -1,6 +1,24 @@
 # MCP Integration Examples
 
-This document shows comprehensive examples of how to integrate and use the selfDocumentMCP server with VS Code and Copilot, including the new remote branch features.
+This document shows comprehensive examples of how to integrate and use the selfDocumentMCP server with VS Code and Copilot, including **advanced commit search capabilities** and remote branch features.
+
+## 🔥 Featured: Advanced Commit Search
+
+The latest enhancement includes powerful commit search functionality that revolutionizes repository analysis:
+
+- **Deep Search**: Search through commit messages AND file contents simultaneously
+- **Comprehensive Results**: Get commit details, file locations, line numbers, and content
+- **Performance Optimized**: Smart filtering and configurable search depth
+- **Rich Output**: Detailed markdown reports with match summaries and statistics
+
+### Quick Search Examples
+
+```bash
+@copilot Search all commits for "authentication" and show detailed results
+@copilot Find commits mentioning "bug fix" in messages or code
+@copilot Look for "TODO" comments across entire commit history
+@copilot Search for "deprecated" functions with line details
+```
 
 ## VS Code Configuration
 
@@ -119,6 +137,45 @@ Once configured, you can use natural language commands with Copilot:
 @copilot Fetch latest changes from origin
 ```
 
+### 🔥 Commit and Code Search (Advanced)
+
+**Basic Search Commands:**
+
+```
+@copilot Search all commits for "authentication" to find related changes
+@copilot Find all commits that mention "bug fix" in messages or code
+@copilot Search for "deprecated" across all commit history
+@copilot Look for "TODO" comments in all commits and show me where they are
+@copilot Find commits containing "API" and show detailed line matches
+```
+
+**Advanced Search Use Cases:**
+
+```
+@copilot Search last 50 commits for "HttpClient" usage with detailed line info
+@copilot Find all instances of "password" in commit history for security audit
+@copilot Search for "Exception" in messages and code to track error handling
+@copilot Look for "database" references across development history
+@copilot Find commits mentioning "performance" with full context details
+```
+
+**Targeted Search Examples:**
+
+```
+@copilot Search recent 25 commits for "refactor" to see code improvements
+@copilot Find all commits with "config" changes in last 100 commits
+@copilot Search for "test" additions across entire project history
+@copilot Look for "security" mentions with line-by-line details
+```
+
+**Results Include:**
+
+- Commit hash, author, and timestamp
+- Exact file names containing matches
+- Line numbers and full line content
+- Summary statistics (commits searched, matches found)
+- File-by-file breakdown with detailed context
+
 ### Advanced Use Cases
 
 #### Release Planning
@@ -143,6 +200,53 @@ Once configured, you can use natural language commands with Copilot:
 @copilot Fetch from origin and compare main with origin/main
 @copilot Check if our local branches are up to date with remote
 @copilot Compare upstream/main with our fork's main branch
+```
+
+#### 🔥 Advanced Commit Search Use Cases
+
+**Bug Tracking & Debugging:**
+
+```
+@copilot Search for "NullReferenceException" across all commits to track bug fixes
+@copilot Find commits mentioning "crash" or "error" in the last 50 commits
+@copilot Search for "memory leak" references in commit history
+@copilot Look for "timeout" issues across development timeline
+```
+
+**Security & Compliance:**
+
+```
+@copilot Search for "password" or "secret" across all commits for security audit
+@copilot Find all commits mentioning "encryption" or "decrypt"
+@copilot Search for "API key" references in commit messages and code
+@copilot Look for "vulnerability" mentions across project history
+```
+
+**Feature Development Analysis:**
+
+```
+@copilot Search for "user authentication" to trace feature development
+@copilot Find all commits related to "payment processing" functionality
+@copilot Search for "database migration" references with detailed context
+@copilot Look for "performance optimization" across development history
+```
+
+**Code Quality & Maintenance:**
+
+```
+@copilot Search for "TODO" comments across all commits to find pending work
+@copilot Find "deprecated" function usage across commit history
+@copilot Search for "refactor" mentions to track code improvements
+@copilot Look for "test" additions to understand testing evolution
+```
+
+**Integration & Dependencies:**
+
+```
+@copilot Search for "third-party" or "library" references in commits
+@copilot Find all commits mentioning specific package names like "React" or "jQuery"
+@copilot Search for "configuration" changes across project timeline
+@copilot Look for "environment" or "deployment" related commits
 ```
 
 ## Manual Testing
@@ -278,12 +382,72 @@ Once configured, you can use natural language commands with Copilot:
 }
 ```
 
-#### Get Changed Files Between Commits
+#### 🔥 Search Commits for String (Advanced Search)
+
+**Basic Search Example:**
 
 ```json
 {
   "jsonrpc": "2.0",
   "id": 8,
+  "method": "tools/call",
+  "params": {
+    "name": "search_commits_for_string",
+    "arguments": {
+      "searchString": "authentication",
+      "maxCommits": 50
+    }
+  }
+}
+```
+
+**Advanced Search Examples:**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 8,
+  "method": "tools/call",
+  "params": {
+    "name": "search_commits_for_string",
+    "arguments": {
+      "searchString": "bug fix",
+      "maxCommits": 100
+    }
+  }
+}
+```
+
+**Security Audit Search:**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 8,
+  "method": "tools/call",
+  "params": {
+    "name": "search_commits_for_string",
+    "arguments": {
+      "searchString": "password",
+      "maxCommits": 200
+    }
+  }
+}
+```
+
+**Expected Response Format:**
+
+- Search summary (commits searched, matches found, total line matches)
+- Per-commit details (hash, author, timestamp, message)
+- File-by-file breakdown (file names, match counts)
+- Line-level details (line numbers, full content, exact matches)
+
+#### Get Changed Files Between Commits
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 9,
   "method": "tools/call",
   "params": {
     "name": "get_changed_files_between_commits",
@@ -300,7 +464,7 @@ Once configured, you can use natural language commands with Copilot:
 ```json
 {
   "jsonrpc": "2.0",
-  "id": 9,
+  "id": 10,
   "method": "tools/call",
   "params": {
     "name": "get_detailed_diff_between_commits",
@@ -590,7 +754,7 @@ function Test-JsonRpc {
     } elseif (-not $ExpectedPattern) {
         Write-Host "Response: $response" -ForegroundColor Yellow
     } else {
-        Write-Host "✗ FAIL - Expected pattern not found" -ForegroundColor Red
+        Write-host "✗ FAIL - Expected pattern not found" -ForegroundColor Red
     }
     Write-Host ""
 }
@@ -658,11 +822,32 @@ Run the test script:
      - Create target directories if they don't exist
 
 6. **JSON-RPC Communication Issues**
+
    - **Error**: "Failed to parse message" warnings
    - **Solutions**:
      - Build project first: `dotnet build --configuration Release`
      - Use production environment: `DOTNET_ENVIRONMENT=Production`
      - Add `--no-build --verbosity quiet` flags
+
+7. **🔍 Search Tool Issues**
+
+   - **Error**: "Search timeout" or "Too many results"
+   - **Solutions**:
+     - Reduce `maxCommits` parameter (try 25-50 for large repos)
+     - Use more specific search terms to narrow results
+     - Avoid very common words like "the", "and", "if"
+   - **Performance Tips**:
+     - Start with recent commits: `maxCommits: 25`
+     - Use specific technical terms for better targeting
+     - Large repositories may take 10-30 seconds for comprehensive searches
+
+8. **Search Result Interpretation**
+   - **Issue**: "Too many or too few results"
+   - **Solutions**:
+     - Search is case-insensitive by default
+     - Searches both commit messages AND file contents
+     - Try variations of search terms (e.g., "auth", "authentication", "login")
+     - Use quotation marks in natural language: `"user authentication"`
 
 ### Performance Issues
 
@@ -775,46 +960,72 @@ echo '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' | dotnet run -
 3. **Release Planning**: Compare release branches with main for release notes
 4. **Team Collaboration**: Share analysis results with team members
 
-## Advanced Examples
+## 🚀 Search Optimization Guide
 
-### Automated Release Notes
+### Best Practices for Commit Search
 
-```json
-{
-  "name": "compare_branches_with_remote",
-  "arguments": {
-    "branch1": "release/v2.0",
-    "branch2": "origin/main",
-    "filePath": "docs/release-v2.0-notes.md",
-    "outputFormat": "markdown",
-    "fetchRemote": true
-  }
-}
+**1. Search Term Selection:**
+
+- Use specific technical terms: `"HttpClient"`, `"database"`, `"authentication"`
+- Avoid very common words: `"the"`, `"and"`, `"for"`, `"in"`
+- Try variations: `"auth"`, `"login"`, `"signin"`, `"authentication"`
+- Use compound terms: `"user authentication"`, `"bug fix"`, `"performance optimization"`
+
+**2. Performance Optimization:**
+
+```bash
+# Fast interactive search (immediate feedback)
+@copilot Search last 25 commits for "API" changes
+
+# Comprehensive analysis (thorough investigation)
+@copilot Search all commits for "security" with maxCommits 150
+
+# Targeted search (specific timeframe)
+@copilot Search recent 50 commits for "database migration"
 ```
 
-### Code Review Documentation
+**3. Result Interpretation:**
 
-```json
-{
-  "name": "get_commit_diff_info",
-  "arguments": {
-    "commit1": "feature-start-commit",
-    "commit2": "feature-end-commit"
-  }
-}
+- **High match count**: Consider more specific search terms
+- **Low match count**: Try broader terms or synonyms
+- **No results**: Verify spelling, try related terms
+- **Performance issues**: Reduce maxCommits or use more specific terms
+
+**4. Advanced Search Strategies:**
+
+```bash
+# Multi-phase search approach
+@copilot Search for "login" in last 30 commits  # Quick overview
+@copilot Search for "authentication" in last 100 commits  # Detailed analysis
+
+# Combine with other tools for context
+@copilot Search for "refactor" then show file changes between found commits
+@copilot Search for "bug" then get recent commits for timeline context
 ```
 
-### Cross-Repository Analysis
+### Search Use Case Templates
 
-```json
-{
-  "name": "compare_branches_with_remote",
-  "arguments": {
-    "branch1": "origin/main",
-    "branch2": "upstream/main",
-    "filePath": "docs/upstream-sync-analysis.md"
-  }
-}
+**Bug Investigation:**
+
+```
+1. @copilot Search for "[bug description]" in recent commits
+2. @copilot Get detailed diff between commits found in search
+3. @copilot List files changed between bug introduction and fix
 ```
 
-This comprehensive documentation should help you make the most of the selfDocumentMCP server's capabilities, especially the new remote branch features!
+**Feature Development Tracking:**
+
+```
+1. @copilot Search for "[feature name]" across all commits
+2. @copilot Compare first and last commits mentioning feature
+3. @copilot Generate documentation covering feature development
+```
+
+**Security Audit Workflow:**
+
+```
+1. @copilot Search for "password" or "secret" across all commits
+2. @copilot Search for "authentication" and "authorization"
+3. @copilot Search for "encryption" and security-related terms
+4. @copilot Generate comprehensive security audit report
+```
