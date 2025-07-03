@@ -1,8 +1,8 @@
-# Project Status: selfDocumentMCP
+# Project Status: GitVisionMCP
 
 ## ✅ Implementation Complete - Full Feature Set with Advanced Search
 
-The selfDocumentMCP project has been successfully developed as a comprehensive Model Context Protocol (MCP) Server with advanced git analysis capabilities, including **full remote branch support** and **powerful commit search functionality**.
+The GitVisionMCP project has been successfully developed as a comprehensive Model Context Protocol (MCP) Server with advanced git analysis capabilities, including **full remote branch support** and **powerful commit search functionality**.
 
 ### Core Architecture
 
@@ -102,7 +102,7 @@ The selfDocumentMCP project has been successfully developed as a comprehensive M
 ## 🔧 Project Structure
 
 ```
-selfDocumentMCP/
+GitVisionMCP/
 ├── .github/
 │   └── copilot-instructions.md    # Copilot Agent instructions
 ├── .vscode/
@@ -118,8 +118,8 @@ selfDocumentMCP/
 ├── Properties/
 │   └── launchSettings.json       # Launch profiles
 ├── logs/                         # Log files (created automatically)
-│   ├── selfdocumentmcp.log       # Production logs
-│   └── selfdocumentmcp-dev.log   # Development logs
+│   ├── gitvisionmcp.log       # Production logs
+│   └── gitvisionmcp-dev.log   # Development logs
 ├── bin/                          # Build output (ignored)
 ├── obj/                          # Build temp (ignored)
 ├── .gitignore                    # Git ignore rules + logs
@@ -132,9 +132,9 @@ selfDocumentMCP/
 ├── Program.cs                    # Application entry point
 ├── PROJECT_STATUS.md             # This status file
 ├── README.md                     # Complete project documentation
-├── selfDocumentMCP.csproj        # Project file
-├── selfDocumentMCP.http          # HTTP test requests
-├── selfDocumentMCP.sln           # Solution file
+├── GitVisionMCP.csproj        # Project file
+├── GitVisionMCP.http          # HTTP test requests
+├── GitVisionMCP.sln           # Solution file
 ├── SETUP.md                      # Setup instructions
 └── TestModels.cs                 # Model serialization tests
 ```
@@ -323,7 +323,7 @@ While the current implementation is feature-complete, potential enhancements cou
 
 ## 📈 Project Impact
 
-The selfDocumentMCP server now provides a **complete git analysis ecosystem** that enables:
+The GitVisionMCP server now provides a **complete git analysis ecosystem** that enables:
 
 - **Developers**: Comprehensive repository analysis and documentation generation
 - **Teams**: Enhanced collaboration through detailed branch and commit analysis
@@ -331,6 +331,6 @@ The selfDocumentMCP server now provides a **complete git analysis ecosystem** th
 - **Management**: Clear visibility into project progress and code changes
 - **Research**: Historical analysis and pattern discovery across development timeline
 
-This positions selfDocumentMCP as a **professional-grade tool** for git repository analysis and documentation that significantly enhances development workflow efficiency.
+This positions GitVisionMCP as a **professional-grade tool** for git repository analysis and documentation that significantly enhances development workflow efficiency.
 
 **Status: COMPLETE - Ready for production use and further development**

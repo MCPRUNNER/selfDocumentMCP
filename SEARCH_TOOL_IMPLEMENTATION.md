@@ -2,7 +2,7 @@
 
 ## Overview
 
-Successfully implemented a comprehensive commit search tool for the selfDocumentMCP project that searches all commits for a specific string and returns detailed match information.
+Successfully implemented a comprehensive commit search tool for the GitVisionMCP project that searches all commits for a specific string and returns detailed match information.
 
 ## What Was Implemented
 

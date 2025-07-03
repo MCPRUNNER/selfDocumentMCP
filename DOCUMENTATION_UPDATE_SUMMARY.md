@@ -37,7 +37,7 @@
 
 - Created "Latest Achievement - Advanced Search Capabilities" highlighting technical accomplishments
 - Added "Project Impact" section showing business and technical value
-- Positioned selfDocumentMCP as a professional-grade tool for git analysis
+- Positioned GitVisionMCP as a professional-grade tool for git analysis
 - Emphasized enhanced development workflow efficiency
 
 **6. Technical Accuracy Updates**
@@ -130,7 +130,7 @@
 
 ## Impact
 
-The updated documentation now positions selfDocumentMCP as a **professional-grade git analysis platform** with revolutionary search capabilities that:
+The updated documentation now positions GitVisionMCP as a **professional-grade git analysis platform** with revolutionary search capabilities that:
 
 - **Empowers Developers**: Comprehensive repository analysis and documentation generation
 - **Enhances Teams**: Advanced collaboration through detailed historical analysis

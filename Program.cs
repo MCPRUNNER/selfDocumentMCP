@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
-using SelfDocumentMCP.Services;
+using GitVisionMCP.Services;
 using System.Text;
 
 // Ensure UTF-8 encoding for stdout
@@ -23,7 +23,7 @@ var host = Host.CreateDefaultBuilder(args)
             builder.ClearProviders();
 
             // Add file logging instead of console logging
-            var logPath = Path.Combine(Directory.GetCurrentDirectory(), "logs", "selfdocumentmcp.log");
+            var logPath = Path.Combine(Directory.GetCurrentDirectory(), "logs", "gitvisionmcp.log");
             Directory.CreateDirectory(Path.GetDirectoryName(logPath)!);
 
             builder.AddFile(logPath, minimumLevel: LogLevel.Information);

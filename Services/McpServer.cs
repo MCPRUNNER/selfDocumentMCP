@@ -1,12 +1,12 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using SelfDocumentMCP.Models;
-using SelfDocumentMCP.Services;
+using GitVisionMCP.Models;
+using GitVisionMCP.Services;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace SelfDocumentMCP.Services;
+namespace GitVisionMCP.Services;
 
 public interface IMcpServer
 {
@@ -157,7 +157,7 @@ public class McpServer : IMcpServer
             },
             ServerInfo = new ServerInfo
             {
-                Name = "selfDocumentMCP",
+                Name = "GitVisionMCP",
                 Version = "1.0.0"
             }
         };

@@ -1,8 +1,8 @@
 {
   "mcpServers": {
-    "selfDocumentMCP": {
+    "GitVisionMCP": {
       "command": "dotnet",
-      "args": ["run", "--project", "c:\\Users\\U00001\\source\\repos\\MCP\\selfDocumentMCP\\selfDocumentMCP.csproj", "--no-build", "--verbosity", "quiet"],
+      "args": ["run", "--project", "c:\\Users\\U00001\\source\\repos\\MCP\\selfDocumentMCP\\GitVisionMCP.csproj", "--no-build", "--verbosity", "quiet"],
       "env": {
         "DOTNET_ENVIRONMENT": "Production"
       }

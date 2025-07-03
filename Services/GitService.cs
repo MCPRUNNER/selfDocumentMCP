@@ -1,8 +1,8 @@
 using LibGit2Sharp;
 using Microsoft.Extensions.Logging;
-using SelfDocumentMCP.Models;
+using GitVisionMCP.Models;
 
-namespace SelfDocumentMCP.Services;
+namespace GitVisionMCP.Services;
 
 public interface IGitService
 {
