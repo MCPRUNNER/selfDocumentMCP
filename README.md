@@ -33,6 +33,7 @@ This MCP server provides comprehensive git documentation and analysis tools:
 - **get_changed_files_between_commits**: List files changed between two commits
 - **get_detailed_diff_between_commits**: Get detailed diff content between commits
 - **get_commit_diff_info**: Get comprehensive diff statistics and file changes
+- **get_file_line_diff_between_commits**: 🆕 Get line-by-line diff for a specific file between two commits
 
 ### Branch Discovery and Remote Support
 
@@ -272,6 +273,18 @@ Gets comprehensive diff statistics between two commits.
 - `commit2` (required): Second commit hash
 
 **Returns:** Statistics including files changed, insertions, deletions, and file-by-file breakdown
+
+#### get_file_line_diff_between_commits
+
+Gets line-by-line diff for a specific file between two commits.
+
+**Parameters:**
+
+- `commit1` (required): First commit hash
+- `commit2` (required): Second commit hash
+- `filePath` (required): Path to the file to diff
+
+**Returns:** Detailed line-by-line comparison with syntax highlighting showing added, deleted, and context lines
 
 ### Branch Discovery Tools
 
