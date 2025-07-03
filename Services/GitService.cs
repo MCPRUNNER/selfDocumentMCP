@@ -17,6 +17,13 @@ public interface IGitService
     Task<List<string>> GetChangedFilesBetweenCommitsAsync(string repositoryPath, string commit1, string commit2);
     Task<string> GetDetailedDiffBetweenCommitsAsync(string repositoryPath, string commit1, string commit2, List<string>? specificFiles = null);
     Task<GitCommitDiffInfo> GetCommitDiffInfoAsync(string repositoryPath, string commit1, string commit2);
+
+    // New methods for remote branch support
+    Task<List<string>> GetLocalBranchesAsync(string repositoryPath);
+    Task<List<string>> GetRemoteBranchesAsync(string repositoryPath);
+    Task<List<string>> GetAllBranchesAsync(string repositoryPath);
+    Task<bool> FetchFromRemoteAsync(string repositoryPath, string remoteName = "origin");
+    Task<List<GitCommitInfo>> GetGitLogsBetweenBranchesWithRemoteAsync(string repositoryPath, string branch1, string branch2, bool fetchRemote = true);
 }
 
 public class GitService : IGitService
@@ -89,12 +96,22 @@ public class GitService : IGitService
             var commits = new List<GitCommitInfo>();
 
             using var repo = new Repository(repositoryPath);
-            var branch1Ref = repo.Branches[branch1];
-            var branch2Ref = repo.Branches[branch2];
 
-            if (branch1Ref == null || branch2Ref == null)
+            // Handle both local and remote branch references
+            var branch1Name = NormalizeBranchName(branch1);
+            var branch2Name = NormalizeBranchName(branch2);
+
+            var branch1Ref = repo.Branches[branch1Name] ?? repo.Branches[$"origin/{branch1Name}"] ?? repo.Branches[branch1];
+            var branch2Ref = repo.Branches[branch2Name] ?? repo.Branches[$"origin/{branch2Name}"] ?? repo.Branches[branch2];
+
+            if (branch1Ref == null)
             {
-                throw new ArgumentException("One or both branches not found");
+                throw new ArgumentException($"Branch '{branch1}' not found (tried local and remote variants)");
+            }
+
+            if (branch2Ref == null)
+            {
+                throw new ArgumentException($"Branch '{branch2}' not found (tried local and remote variants)");
             }
 
             var filter = new CommitFilter
@@ -556,5 +573,194 @@ public class GitService : IGitService
         }
 
         return await Task.FromResult(text.ToString());
+    }
+
+    // New methods for remote branch support
+    public async Task<List<string>> GetLocalBranchesAsync(string repositoryPath)
+    {
+        try
+        {
+            _logger.LogInformation("Getting local branches from repository: {RepositoryPath}", repositoryPath);
+
+            if (!Repository.IsValid(repositoryPath))
+            {
+                throw new InvalidOperationException($"Path is not a valid git repository: {repositoryPath}");
+            }
+
+            using var repo = new Repository(repositoryPath);
+            var localBranches = repo.Branches
+                .Where(b => !b.IsRemote)
+                .Select(b => b.FriendlyName)
+                .ToList();
+
+            _logger.LogInformation("Found {Count} local branches", localBranches.Count);
+            return await Task.FromResult(localBranches);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting local branches from repository: {RepositoryPath}", repositoryPath);
+            throw;
+        }
+    }
+
+    public async Task<List<string>> GetRemoteBranchesAsync(string repositoryPath)
+    {
+        try
+        {
+            _logger.LogInformation("Getting remote branches from repository: {RepositoryPath}", repositoryPath);
+
+            if (!Repository.IsValid(repositoryPath))
+            {
+                throw new InvalidOperationException($"Path is not a valid git repository: {repositoryPath}");
+            }
+
+            using var repo = new Repository(repositoryPath);
+            var remoteBranches = repo.Branches
+                .Where(b => b.IsRemote)
+                .Select(b => b.FriendlyName)
+                .ToList();
+
+            _logger.LogInformation("Found {Count} remote branches", remoteBranches.Count);
+            return await Task.FromResult(remoteBranches);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting remote branches from repository: {RepositoryPath}", repositoryPath);
+            throw;
+        }
+    }
+
+    public async Task<List<string>> GetAllBranchesAsync(string repositoryPath)
+    {
+        try
+        {
+            _logger.LogInformation("Getting all branches from repository: {RepositoryPath}", repositoryPath);
+
+            if (!Repository.IsValid(repositoryPath))
+            {
+                throw new InvalidOperationException($"Path is not a valid git repository: {repositoryPath}");
+            }
+
+            using var repo = new Repository(repositoryPath);
+            var allBranches = repo.Branches
+                .Select(b => b.IsRemote ? $"remote/{b.FriendlyName}" : $"local/{b.FriendlyName}")
+                .ToList();
+
+            _logger.LogInformation("Found {Count} total branches", allBranches.Count);
+            return await Task.FromResult(allBranches);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting all branches from repository: {RepositoryPath}", repositoryPath);
+            throw;
+        }
+    }
+
+    public async Task<bool> FetchFromRemoteAsync(string repositoryPath, string remoteName = "origin")
+    {
+        try
+        {
+            _logger.LogInformation("Fetching from remote {RemoteName} in repository: {RepositoryPath}", remoteName, repositoryPath);
+
+            if (!Repository.IsValid(repositoryPath))
+            {
+                throw new InvalidOperationException($"Path is not a valid git repository: {repositoryPath}");
+            }
+
+            using var repo = new Repository(repositoryPath);
+            var remote = repo.Network.Remotes[remoteName];
+
+            if (remote == null)
+            {
+                _logger.LogWarning("Remote {RemoteName} not found in repository", remoteName);
+                return false;
+            }
+
+            var refSpecs = remote.FetchRefSpecs.Select(x => x.Specification);
+            Commands.Fetch(repo, remoteName, refSpecs, null, "Fetch from MCP server");
+
+            _logger.LogInformation("Successfully fetched from remote {RemoteName}", remoteName);
+            return await Task.FromResult(true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching from remote {RemoteName} in repository: {RepositoryPath}", remoteName, repositoryPath);
+            return await Task.FromResult(false);
+        }
+    }
+
+    public async Task<List<GitCommitInfo>> GetGitLogsBetweenBranchesWithRemoteAsync(string repositoryPath, string branch1, string branch2, bool fetchRemote = true)
+    {
+        try
+        {
+            _logger.LogInformation("Getting git logs between branches {Branch1} and {Branch2} with remote support", branch1, branch2);
+
+            if (!Repository.IsValid(repositoryPath))
+            {
+                throw new InvalidOperationException($"Path is not a valid git repository: {repositoryPath}");
+            }
+
+            // Fetch from remote if requested
+            if (fetchRemote)
+            {
+                await FetchFromRemoteAsync(repositoryPath);
+            }
+
+            var commits = new List<GitCommitInfo>();
+
+            using var repo = new Repository(repositoryPath);
+
+            // Handle remote branch references
+            var branch1Name = NormalizeBranchName(branch1);
+            var branch2Name = NormalizeBranchName(branch2);
+
+            var branch1Ref = repo.Branches[branch1Name] ?? repo.Branches[$"origin/{branch1Name}"];
+            var branch2Ref = repo.Branches[branch2Name] ?? repo.Branches[$"origin/{branch2Name}"];
+
+            if (branch1Ref == null)
+            {
+                throw new ArgumentException($"Branch '{branch1}' not found (tried local and origin remote)");
+            }
+
+            if (branch2Ref == null)
+            {
+                throw new ArgumentException($"Branch '{branch2}' not found (tried local and origin remote)");
+            }
+
+            var filter = new CommitFilter
+            {
+                ExcludeReachableFrom = branch1Ref.Tip,
+                IncludeReachableFrom = branch2Ref.Tip
+            };
+
+            var repoCommits = repo.Commits.QueryBy(filter);
+
+            foreach (var commit in repoCommits)
+            {
+                var commitInfo = await CreateGitCommitInfoAsync(repo, commit);
+                commits.Add(commitInfo);
+            }
+
+            _logger.LogInformation("Retrieved {Count} commits between branches with remote support", commits.Count);
+            return commits;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting git logs between branches {Branch1} and {Branch2} with remote support", branch1, branch2);
+            throw;
+        }
+    }
+
+    private string NormalizeBranchName(string branchName)
+    {
+        // Remove common prefixes if present
+        if (branchName.StartsWith("origin/"))
+            return branchName.Substring(7);
+        if (branchName.StartsWith("remote/origin/"))
+            return branchName.Substring(14);
+        if (branchName.StartsWith("local/"))
+            return branchName.Substring(6);
+
+        return branchName;
     }
 }

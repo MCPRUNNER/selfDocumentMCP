@@ -297,6 +297,67 @@ public class McpServer : IMcpServer
                     },
                     required = new[] { "commit1", "commit2" }
                 }
+            },
+            new Tool
+            {
+                Name = "get_local_branches",
+                Description = "Get list of local branches in the repository",
+                InputSchema = new
+                {
+                    type = "object",
+                    properties = new { }
+                }
+            },
+            new Tool
+            {
+                Name = "get_remote_branches",
+                Description = "Get list of remote branches in the repository",
+                InputSchema = new
+                {
+                    type = "object",
+                    properties = new { }
+                }
+            },
+            new Tool
+            {
+                Name = "get_all_branches",
+                Description = "Get list of all branches (local and remote) in the repository",
+                InputSchema = new
+                {
+                    type = "object",
+                    properties = new { }
+                }
+            },
+            new Tool
+            {
+                Name = "fetch_from_remote",
+                Description = "Fetch latest changes from remote repository",
+                InputSchema = new
+                {
+                    type = "object",
+                    properties = new
+                    {
+                        remoteName = new { type = "string", description = "Name of the remote (default: origin)" }
+                    }
+                }
+            },
+            new Tool
+            {
+                Name = "compare_branches_with_remote",
+                Description = "Generate documentation comparing differences between two branches with remote support",
+                InputSchema = new
+                {
+                    type = "object",
+                    properties = new
+                    {
+                        branch1 = new { type = "string", description = "First branch name (can be local or remote, e.g., 'main' or 'origin/main')" },
+                        branch2 = new { type = "string", description = "Second branch name (can be local or remote, e.g., 'feature/xyz' or 'origin/feature/xyz')" },
+                        filePath = new { type = "string", description = "Path where to save the documentation file" },
+                        outputFormat = new { type = "string", description = "Output format: markdown, html, or text (default: markdown)" },
+                        fetchRemote = new { type = "boolean", description = "Whether to fetch from remote before comparison (default: true)" }
+                    },
+                    required = new[] { "branch1", "branch2", "filePath" }
+                }
             }
         };
 
@@ -336,6 +397,11 @@ public class McpServer : IMcpServer
             "get_changed_files_between_commits" => await HandleGetChangedFilesBetweenCommitsAsync(toolRequest),
             "get_detailed_diff_between_commits" => await HandleGetDetailedDiffBetweenCommitsAsync(toolRequest),
             "get_commit_diff_info" => await HandleGetCommitDiffInfoAsync(toolRequest),
+            "get_local_branches" => await HandleGetLocalBranchesAsync(toolRequest),
+            "get_remote_branches" => await HandleGetRemoteBranchesAsync(toolRequest),
+            "get_all_branches" => await HandleGetAllBranchesAsync(toolRequest),
+            "fetch_from_remote" => await HandleFetchFromRemoteAsync(toolRequest),
+            "compare_branches_with_remote" => await HandleCompareBranchesWithRemoteAsync(toolRequest),
             _ => new CallToolResponse
             {
                 IsError = true,
@@ -678,6 +744,157 @@ public class McpServer : IMcpServer
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting commit diff info");
+            return new CallToolResponse
+            {
+                IsError = true,
+                Content = new[] { new ToolContent { Type = "text", Text = $"Error: {ex.Message}" } }
+            };
+        }
+    }
+
+    private async Task<CallToolResponse> HandleGetLocalBranchesAsync(CallToolRequest toolRequest)
+    {
+        try
+        {
+            var workspaceRoot = Environment.CurrentDirectory;
+            var localBranches = await _gitService.GetLocalBranchesAsync(workspaceRoot);
+            var branchList = string.Join("\n", localBranches.Select(b => $"• {b}"));
+
+            return new CallToolResponse
+            {
+                Content = new[] { new ToolContent { Type = "text", Text = $"Local branches:\n\n{branchList}" } }
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting local branches");
+            return new CallToolResponse
+            {
+                IsError = true,
+                Content = new[] { new ToolContent { Type = "text", Text = $"Error: {ex.Message}" } }
+            };
+        }
+    }
+
+    private async Task<CallToolResponse> HandleGetRemoteBranchesAsync(CallToolRequest toolRequest)
+    {
+        try
+        {
+            var workspaceRoot = Environment.CurrentDirectory;
+            var remoteBranches = await _gitService.GetRemoteBranchesAsync(workspaceRoot);
+            var branchList = string.Join("\n", remoteBranches.Select(b => $"• {b}"));
+
+            return new CallToolResponse
+            {
+                Content = new[] { new ToolContent { Type = "text", Text = $"Remote branches:\n\n{branchList}" } }
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting remote branches");
+            return new CallToolResponse
+            {
+                IsError = true,
+                Content = new[] { new ToolContent { Type = "text", Text = $"Error: {ex.Message}" } }
+            };
+        }
+    }
+
+    private async Task<CallToolResponse> HandleGetAllBranchesAsync(CallToolRequest toolRequest)
+    {
+        try
+        {
+            var workspaceRoot = Environment.CurrentDirectory;
+            var allBranches = await _gitService.GetAllBranchesAsync(workspaceRoot);
+            var branchList = string.Join("\n", allBranches.Select(b => $"• {b}"));
+
+            return new CallToolResponse
+            {
+                Content = new[] { new ToolContent { Type = "text", Text = $"All branches:\n\n{branchList}" } }
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting all branches");
+            return new CallToolResponse
+            {
+                IsError = true,
+                Content = new[] { new ToolContent { Type = "text", Text = $"Error: {ex.Message}" } }
+            };
+        }
+    }
+
+    private async Task<CallToolResponse> HandleFetchFromRemoteAsync(CallToolRequest toolRequest)
+    {
+        try
+        {
+            var workspaceRoot = Environment.CurrentDirectory;
+            var remoteName = GetArgumentValue<string>(toolRequest.Arguments, "remoteName", "origin");
+            var success = await _gitService.FetchFromRemoteAsync(workspaceRoot, remoteName);
+
+            return new CallToolResponse
+            {
+                Content = new[] { new ToolContent
+                {
+                    Type = "text",
+                    Text = success ? $"Successfully fetched from remote '{remoteName}'" : $"Failed to fetch from remote '{remoteName}'"
+                } }
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching from remote");
+            return new CallToolResponse
+            {
+                IsError = true,
+                Content = new[] { new ToolContent { Type = "text", Text = $"Error: {ex.Message}" } }
+            };
+        }
+    }
+
+    private async Task<CallToolResponse> HandleCompareBranchesWithRemoteAsync(CallToolRequest toolRequest)
+    {
+        try
+        {
+            var branch1 = GetArgumentValue<string>(toolRequest.Arguments, "branch1", "");
+            var branch2 = GetArgumentValue<string>(toolRequest.Arguments, "branch2", "");
+            var filePath = GetArgumentValue<string>(toolRequest.Arguments, "filePath", "");
+
+            if (string.IsNullOrEmpty(branch1) || string.IsNullOrEmpty(branch2) || string.IsNullOrEmpty(filePath))
+            {
+                return new CallToolResponse
+                {
+                    IsError = true,
+                    Content = new[] { new ToolContent { Type = "text", Text = "branch1, branch2, and filePath arguments are required" } }
+                };
+            }
+
+            var workspaceRoot = Environment.CurrentDirectory;
+            var outputFormat = GetArgumentValue<string>(toolRequest.Arguments, "outputFormat", "markdown");
+            var fetchRemote = GetArgumentValue<bool>(toolRequest.Arguments, "fetchRemote", true);
+
+            // Make path relative to workspace if not absolute
+            if (!Path.IsPathRooted(filePath))
+            {
+                filePath = Path.Combine(workspaceRoot, filePath);
+            }
+
+            var commits = await _gitService.GetGitLogsBetweenBranchesWithRemoteAsync(workspaceRoot, branch1, branch2, fetchRemote);
+            var documentation = await _gitService.GenerateDocumentationAsync(commits, outputFormat);
+            var success = await _gitService.WriteDocumentationToFileAsync(documentation, filePath);
+
+            return new CallToolResponse
+            {
+                Content = new[] { new ToolContent
+                {
+                    Type = "text",
+                    Text = success ? $"Remote branch comparison documentation successfully written to {filePath}" : "Failed to write documentation to file"
+                } }
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error generating remote branch comparison documentation");
             return new CallToolResponse
             {
                 IsError = true,

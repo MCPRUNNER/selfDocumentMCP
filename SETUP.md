@@ -1,5 +1,7 @@
 # Quick Setup Guide for selfDocumentMCP
 
+A comprehensive Model Context Protocol (MCP) Server with advanced git analysis and remote branch support.
+
 ## Step 1: Build the Project
 
 ```powershell
@@ -67,11 +69,46 @@ After updating the MCP configuration, restart VS Code completely for the changes
 
 ## Step 5: Test with Copilot
 
-Try asking Copilot:
+Try asking Copilot about the enhanced capabilities:
 
+### Basic Documentation
 - "Generate documentation from git logs"
 - "Show me the available MCP tools"
 - "Create git documentation and save it to docs/changelog.md"
+
+### Remote Branch Features (🆕 New)
+- "Compare my feature branch with origin/main"
+- "List all remote branches in this repository"
+- "Fetch from origin and compare branches"
+- "Show me recent commits with detailed information"
+
+### Advanced Analysis
+- "Compare two commits and show me what files changed"
+- "Get comprehensive diff information between commits"
+- "Analyze differences between release and main branches"
+
+## Available Tools (13 Total)
+
+The MCP server provides comprehensive git analysis tools:
+
+### Core Documentation (2)
+- `generate_git_documentation` - Generate docs from git logs
+- `generate_git_documentation_to_file` - Save docs to file
+
+### Branch Operations (6)
+- `compare_branches_documentation` - Compare local branches
+- `compare_branches_with_remote` - 🆕 Compare with remote support
+- `get_local_branches` - 🆕 List local branches
+- `get_remote_branches` - 🆕 List remote branches
+- `get_all_branches` - 🆕 List all branches
+- `fetch_from_remote` - 🆕 Fetch from remote
+
+### Commit Analysis (5)
+- `compare_commits_documentation` - Compare commits
+- `get_recent_commits` - 🆕 Get recent commits
+- `get_changed_files_between_commits` - 🆕 List changed files
+- `get_detailed_diff_between_commits` - 🆕 Detailed diffs
+- `get_commit_diff_info` - 🆕 Comprehensive diff stats
 
 ## Verification Commands
 
