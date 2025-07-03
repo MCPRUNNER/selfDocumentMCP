@@ -1,24 +1,36 @@
 # Project Status: selfDocumentMCP
 
-## ✅ Implementation Complete - Full Feature Set
+## ✅ Implementation Complete - Full Feature Set with Advanced Search
 
-The selfDocumentMCP project has been successfully developed as a comprehensive Model Context Protocol (MCP) Server with advanced git analysis capabilities, including **full remote branch support**.
+The selfDocumentMCP project has been successfully developed as a comprehensive Model Context Protocol (MCP) Server with advanced git analysis capabilities, including **full remote branch support** and **powerful commit search functionality**.
 
 ### Core Architecture
 
 - **Program.cs**: Application entry point with dependency injection and Serilog logging
 - **Models/McpModels.cs**: Complete MCP protocol data models and JSON-RPC structures
-- **Services/GitService.cs**: Advanced git operations with remote branch support
-- **Services/McpServer.cs**: Complete MCP protocol implementation with 13 tools
+- **Services/GitService.cs**: Advanced git operations with remote branch support and search capabilities
+- **Services/McpServer.cs**: Complete MCP protocol implementation with 14 specialized tools
 
-### 🆕 Latest Enhancements (Remote Branch Support)
+### 🆕 Latest Major Enhancement - Commit Search Tool
 
-#### Advanced Git Analysis Tools (New)
+#### Revolutionary Search Capabilities (NEW)
 
-- ✅ **get_recent_commits**: Get recent commits with detailed information
-- ✅ **get_changed_files_between_commits**: List files changed between commits
-- ✅ **get_detailed_diff_between_commits**: Get detailed diff content with file filtering
-- ✅ **get_commit_diff_info**: Comprehensive diff statistics and analysis
+- ✅ **search_commits_for_string**: 🔥 Advanced commit search across messages and file contents
+  - **Deep Search**: Searches through commit messages AND all file contents simultaneously
+  - **Comprehensive Results**: Returns commit hash, timestamp, author, line numbers, and full line content
+  - **File-by-file Breakdown**: Shows exactly which files contain matches and where
+  - **Line-level Precision**: Includes exact line numbers and full line content for context
+  - **Case-insensitive Search**: Finds matches regardless of text case
+  - **Performance Optimized**: Configurable search depth with automatic binary file filtering
+  - **Historical Analysis**: Search across entire commit history with smart resource management
+
+#### Practical Search Applications
+
+- ✅ **Bug Tracking**: Find all commits related to specific bugs or error messages
+- ✅ **Feature History**: Trace development of specific features across time
+- ✅ **Security Audits**: Search for sensitive patterns, passwords, or security keywords
+- ✅ **Code Archaeology**: Locate all references to deprecated APIs or functions
+- ✅ **Documentation Discovery**: Find TODO comments, documentation references, or specific APIs
 
 #### Remote Branch Discovery & Operations (New)
 
@@ -40,7 +52,7 @@ The selfDocumentMCP project has been successfully developed as a comprehensive M
 
 - ✅ JSON-RPC 2.0 protocol implementation with compact output
 - ✅ Initialize/initialized handshake
-- ✅ Tools list and tool calling (13 total tools)
+- ✅ Tools list and tool calling (14 total tools including advanced search)
 - ✅ Comprehensive error handling and responses
 - ✅ STDIO communication optimized for VS Code integration
 
@@ -102,7 +114,7 @@ selfDocumentMCP/
 │   └── McpModels.cs              # MCP and JSON-RPC models
 ├── Services/
 │   ├── GitService.cs             # Git operations with remote support
-│   └── McpServer.cs              # MCP protocol server (13 tools)
+│   └── McpServer.cs              # MCP protocol server (14 tools)
 ├── Properties/
 │   └── launchSettings.json       # Launch profiles
 ├── logs/                         # Log files (created automatically)
@@ -127,14 +139,14 @@ selfDocumentMCP/
 └── TestModels.cs                 # Model serialization tests
 ```
 
-## 🚀 Complete Tool Inventory
+## 🚀 Complete Tool Inventory (14 Tools)
 
-### Documentation Generation (Core)
+### 📝 Documentation Generation (2 tools)
 
 1. **generate_git_documentation** - Generate docs from git logs
 2. **generate_git_documentation_to_file** - Save docs to file
 
-### Branch Operations (Enhanced)
+### 🌿 Branch Operations (6 tools)
 
 3. **compare_branches_documentation** - Compare local branches
 4. **compare_branches_with_remote** - 🆕 Compare with remote branch support
@@ -143,7 +155,7 @@ selfDocumentMCP/
 7. **get_all_branches** - 🆕 List all branches (local + remote)
 8. **fetch_from_remote** - 🆕 Fetch from remote repository
 
-### Commit Analysis (Advanced)
+### 📊 Commit Analysis (6 tools)
 
 9. **compare_commits_documentation** - Compare specific commits
 10. **get_recent_commits** - 🆕 Get recent commits with details
@@ -152,24 +164,29 @@ selfDocumentMCP/
 13. **get_commit_diff_info** - 🆕 Comprehensive diff statistics
 14. **get_file_line_diff_between_commits** - 🆕 Line-by-line file diff
 
+### 🔍 Search & Discovery (1 tool)
+
+14. **search_commits_for_string** - 🔥 **NEW**: Advanced commit search across messages and file contents
+
 ## 📋 Tool Capabilities Matrix
 
-| Tool                               | Local Branches | Remote Branches | Commit Analysis | File Output | Formats |
-| ---------------------------------- | :------------: | :-------------: | :-------------: | :---------: | :-----: |
-| generate_git_documentation         |       ✅       |       ✅        |       ✅        |     ❌      |  M,H,T  |
-| generate_git_documentation_to_file |       ✅       |       ✅        |       ✅        |     ✅      |  M,H,T  |
-| compare_branches_documentation     |       ✅       |       ❌        |       ✅        |     ✅      |  M,H,T  |
-| compare_branches_with_remote       |       ✅       |       ✅        |       ✅        |     ✅      |  M,H,T  |
-| compare_commits_documentation      |       ✅       |       ✅        |       ✅        |     ✅      |  M,H,T  |
-| get_recent_commits                 |       ✅       |       ✅        |       ✅        |     ❌      |  Text   |
-| get_changed_files_between_commits  |       ✅       |       ✅        |       ✅        |     ❌      |  Text   |
-| get_detailed_diff_between_commits  |       ✅       |       ✅        |       ✅        |     ❌      |  Text   |
-| get_commit_diff_info               |       ✅       |       ✅        |       ✅        |     ❌      |  Text   |
-| get_file_line_diff_between_commits |       ✅       |       ✅        |       ✅        |     ❌      |  Text   |
-| get_local_branches                 |       ✅       |       ❌        |       ❌        |     ❌      |  Text   |
-| get_remote_branches                |       ❌       |       ✅        |       ❌        |     ❌      |  Text   |
-| get_all_branches                   |       ✅       |       ✅        |       ❌        |     ❌      |  Text   |
-| fetch_from_remote                  |       ❌       |       ✅        |       ❌        |     ❌      |  Text   |
+| Tool                               | Local Branches | Remote Branches | Commit Analysis | File Output | Formats  |
+| ---------------------------------- | :------------: | :-------------: | :-------------: | :---------: | :------: |
+| generate_git_documentation         |       ✅       |       ✅        |       ✅        |     ❌      |  M,H,T   |
+| generate_git_documentation_to_file |       ✅       |       ✅        |       ✅        |     ✅      |  M,H,T   |
+| compare_branches_documentation     |       ✅       |       ❌        |       ✅        |     ✅      |  M,H,T   |
+| compare_branches_with_remote       |       ✅       |       ✅        |       ✅        |     ✅      |  M,H,T   |
+| compare_commits_documentation      |       ✅       |       ✅        |       ✅        |     ✅      |  M,H,T   |
+| get_recent_commits                 |       ✅       |       ✅        |       ✅        |     ❌      |   Text   |
+| get_changed_files_between_commits  |       ✅       |       ✅        |       ✅        |     ❌      |   Text   |
+| get_detailed_diff_between_commits  |       ✅       |       ✅        |       ✅        |     ❌      |   Text   |
+| get_commit_diff_info               |       ✅       |       ✅        |       ✅        |     ❌      |   Text   |
+| get_file_line_diff_between_commits |       ✅       |       ✅        |       ✅        |     ❌      |   Text   |
+| get_local_branches                 |       ✅       |       ❌        |       ❌        |     ❌      |   Text   |
+| get_remote_branches                |       ❌       |       ✅        |       ❌        |     ❌      |   Text   |
+| get_all_branches                   |       ✅       |       ✅        |       ❌        |     ❌      |   Text   |
+| fetch_from_remote                  |       ❌       |       ✅        |       ❌        |     ❌      |   Text   |
+| search_commits_for_string          |       ✅       |       ✅        |       ✅        |     ❌      | Markdown |
 
 **Legend**: M=Markdown, H=HTML, T=Text
 
@@ -200,7 +217,7 @@ selfDocumentMCP/
 
 ### Testing Completed
 
-- [x] All 13 tools tested and verified
+- [x] All 14 tools tested and verified
 - [x] Remote branch operations tested with GitHub repositories
 - [x] JSON-RPC protocol communication verified
 - [x] Error handling tested for edge cases
@@ -295,5 +312,25 @@ While the current implementation is feature-complete, potential enhancements cou
 - ✅ **Performance Optimized**: Efficient git operations and memory usage
 - ✅ **Logging Strategy**: Non-intrusive file-based logging
 - ✅ **Configuration Management**: Flexible, environment-based configuration
+
+### 🔥 Latest Achievement - Advanced Search Capabilities
+
+- ✅ **Deep Search Implementation**: Search through both commit messages and file contents simultaneously
+- ✅ **Comprehensive Result Format**: Returns structured data with commit metadata, file locations, and line details
+- ✅ **Performance Optimization**: Smart binary file filtering and configurable search depth
+- ✅ **User Experience**: Rich markdown output with detailed match summaries and statistics
+- ✅ **Practical Applications**: Enables bug tracking, feature history analysis, security audits, and code archaeology
+
+## 📈 Project Impact
+
+The selfDocumentMCP server now provides a **complete git analysis ecosystem** that enables:
+
+- **Developers**: Comprehensive repository analysis and documentation generation
+- **Teams**: Enhanced collaboration through detailed branch and commit analysis
+- **Security**: Advanced search capabilities for audit and compliance requirements
+- **Management**: Clear visibility into project progress and code changes
+- **Research**: Historical analysis and pattern discovery across development timeline
+
+This positions selfDocumentMCP as a **professional-grade tool** for git repository analysis and documentation that significantly enhances development workflow efficiency.
 
 **Status: COMPLETE - Ready for production use and further development**

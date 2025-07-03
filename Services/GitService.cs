@@ -25,6 +25,9 @@ public interface IGitService
     Task<List<string>> GetAllBranchesAsync(string repositoryPath);
     Task<bool> FetchFromRemoteAsync(string repositoryPath, string remoteName = "origin");
     Task<List<GitCommitInfo>> GetGitLogsBetweenBranchesWithRemoteAsync(string repositoryPath, string branch1, string branch2, bool fetchRemote = true);
+
+    // New method for searching commits
+    Task<CommitSearchResponse> SearchCommitsForStringAsync(string repositoryPath, string searchString, int maxCommits = 100);
 }
 
 public class GitService : IGitService
@@ -859,6 +862,140 @@ public class GitService : IGitService
         {
             _logger.LogError(ex, "Error getting git logs between branches {Branch1} and {Branch2} with remote support", branch1, branch2);
             throw;
+        }
+    }
+
+    public async Task<CommitSearchResponse> SearchCommitsForStringAsync(string repositoryPath, string searchString, int maxCommits = 100)
+    {
+        try
+        {
+            _logger.LogInformation("Searching commits for string '{SearchString}' in repository: {RepositoryPath}", searchString, repositoryPath);
+
+            var searchResults = new CommitSearchResponse
+            {
+                SearchString = searchString
+            };
+
+            using var repo = new Repository(repositoryPath);
+
+            var commits = repo.Commits.Take(maxCommits).ToList();
+            searchResults.TotalCommitsSearched = commits.Count;
+
+            foreach (var commit in commits)
+            {
+                var commitResult = new CommitSearchResult
+                {
+                    CommitHash = commit.Sha,
+                    CommitMessage = commit.Message.Trim(),
+                    Author = commit.Author.Name,
+                    Timestamp = commit.Author.When.DateTime
+                };
+
+                var hasMatches = false;
+
+                // Search in commit message
+                if (commit.Message.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                {
+                    var messageMatch = new FileSearchMatch
+                    {
+                        FileName = "COMMIT_MESSAGE",
+                        LineMatches = new List<LineSearchMatch>()
+                    };
+
+                    var messageLines = commit.Message.Split('\n');
+                    for (var i = 0; i < messageLines.Length; i++)
+                    {
+                        if (messageLines[i].Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                        {
+                            messageMatch.LineMatches.Add(new LineSearchMatch
+                            {
+                                LineNumber = i + 1,
+                                LineContent = messageLines[i],
+                                SearchString = searchString
+                            });
+                        }
+                    }
+
+                    if (messageMatch.LineMatches.Any())
+                    {
+                        commitResult.FileMatches.Add(messageMatch);
+                        hasMatches = true;
+                    }
+                }
+
+                // Search in file contents for this commit
+                foreach (var entry in commit.Tree)
+                {
+                    if (entry.TargetType == TreeEntryTargetType.Blob)
+                    {
+                        var blob = (Blob)entry.Target;
+
+                        // Skip binary files
+                        if (blob.IsBinary)
+                            continue;
+
+                        try
+                        {
+                            using var contentStream = blob.GetContentStream();
+                            using var reader = new StreamReader(contentStream);
+                            var content = await reader.ReadToEndAsync();
+
+                            if (content.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                            {
+                                var fileMatch = new FileSearchMatch
+                                {
+                                    FileName = entry.Path,
+                                    LineMatches = new List<LineSearchMatch>()
+                                };
+
+                                var lines = content.Split('\n');
+                                for (var i = 0; i < lines.Length; i++)
+                                {
+                                    if (lines[i].Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        fileMatch.LineMatches.Add(new LineSearchMatch
+                                        {
+                                            LineNumber = i + 1,
+                                            LineContent = lines[i].Trim(),
+                                            SearchString = searchString
+                                        });
+                                    }
+                                }
+
+                                if (fileMatch.LineMatches.Any())
+                                {
+                                    commitResult.FileMatches.Add(fileMatch);
+                                    hasMatches = true;
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning(ex, "Could not read content of file {FilePath} in commit {CommitHash}", entry.Path, commit.Sha);
+                        }
+                    }
+                }
+
+                if (hasMatches)
+                {
+                    searchResults.Results.Add(commitResult);
+                }
+            }
+
+            _logger.LogInformation("Found {MatchingCommits} commits with {TotalMatches} total matches for search string '{SearchString}'",
+                searchResults.TotalMatchingCommits, searchResults.TotalLineMatches, searchString);
+
+            return searchResults;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error searching commits for string '{SearchString}' in repository: {RepositoryPath}", searchString, repositoryPath);
+
+            return new CommitSearchResponse
+            {
+                SearchString = searchString,
+                ErrorMessage = ex.Message
+            };
         }
     }
 

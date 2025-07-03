@@ -318,3 +318,45 @@ public class LineDiff
     public string Content { get; set; } = string.Empty;
     public string Type { get; set; } = string.Empty; // Added, Deleted, Context, Modified
 }
+
+public class CommitSearchResult
+{
+    public string CommitHash { get; set; } = string.Empty;
+    public string CommitMessage { get; set; } = string.Empty;
+    public string Author { get; set; } = string.Empty;
+    public DateTime Timestamp
+    {
+        get; set;
+    }
+    public List<FileSearchMatch> FileMatches { get; set; } = new();
+    public int TotalMatches => FileMatches.Sum(f => f.LineMatches.Count);
+}
+
+public class FileSearchMatch
+{
+    public string FileName { get; set; } = string.Empty;
+    public List<LineSearchMatch> LineMatches { get; set; } = new();
+}
+
+public class LineSearchMatch
+{
+    public int LineNumber
+    {
+        get; set;
+    }
+    public string LineContent { get; set; } = string.Empty;
+    public string SearchString { get; set; } = string.Empty;
+}
+
+public class CommitSearchResponse
+{
+    public string SearchString { get; set; } = string.Empty;
+    public int TotalCommitsSearched
+    {
+        get; set;
+    }
+    public int TotalMatchingCommits => Results.Count;
+    public int TotalLineMatches => Results.Sum(r => r.TotalMatches);
+    public List<CommitSearchResult> Results { get; set; } = new();
+    public string ErrorMessage { get; set; } = string.Empty;
+}
