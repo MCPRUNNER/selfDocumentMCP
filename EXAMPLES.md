@@ -58,6 +58,7 @@ Once configured, you can use natural language commands with Copilot:
 ### Core Documentation Commands
 
 #### Generate Git Documentation
+
 ```
 @copilot Generate documentation from the last 20 git commits
 @copilot Create a summary of recent changes in HTML format
@@ -65,6 +66,7 @@ Once configured, you can use natural language commands with Copilot:
 ```
 
 #### Save Documentation to File
+
 ```
 @copilot Generate git documentation and save it to docs/project-history.md
 @copilot Create a change log from the last 30 commits and save to CHANGELOG.md
@@ -74,6 +76,7 @@ Once configured, you can use natural language commands with Copilot:
 ### Branch Comparison Commands
 
 #### Local Branch Comparison
+
 ```
 @copilot Compare changes between main and feature-branch and save to docs/branch-diff.md
 @copilot Show differences between dev and release branches
@@ -81,6 +84,7 @@ Once configured, you can use natural language commands with Copilot:
 ```
 
 #### Remote Branch Comparison (🆕 New Features)
+
 ```
 @copilot Compare my feature branch with origin/main and save to analysis.md
 @copilot Show differences between origin/release/v2.0 and origin/main
@@ -91,6 +95,7 @@ Once configured, you can use natural language commands with Copilot:
 ### Git Analysis Commands
 
 #### Recent Commits Analysis
+
 ```
 @copilot Show me the last 10 commits with details
 @copilot Get recent commit information for code review
@@ -98,6 +103,7 @@ Once configured, you can use natural language commands with Copilot:
 ```
 
 #### File Change Analysis
+
 ```
 @copilot Show me what files changed between these two commits: abc123 and def456
 @copilot List all files modified between commit hashes
@@ -105,6 +111,7 @@ Once configured, you can use natural language commands with Copilot:
 ```
 
 #### Branch Discovery
+
 ```
 @copilot List all branches in this repository
 @copilot Show me all remote branches
@@ -115,6 +122,7 @@ Once configured, you can use natural language commands with Copilot:
 ### Advanced Use Cases
 
 #### Release Planning
+
 ```
 @copilot Compare release/v2.0 with main and create release notes
 @copilot Analyze differences between our release branch and main
@@ -122,6 +130,7 @@ Once configured, you can use natural language commands with Copilot:
 ```
 
 #### Code Review Preparation
+
 ```
 @copilot Compare my feature/user-auth branch with origin/main for code review
 @copilot Show me comprehensive diff information between two commits
@@ -129,6 +138,7 @@ Once configured, you can use natural language commands with Copilot:
 ```
 
 #### Team Synchronization
+
 ```
 @copilot Fetch from origin and compare main with origin/main
 @copilot Check if our local branches are up to date with remote
@@ -486,7 +496,7 @@ Once configured, you can use natural language commands with Copilot:
 
 ### Git Documentation Response
 
-```json
+````json
 {
   "jsonrpc": "2.0",
   "id": 3,
@@ -500,7 +510,7 @@ Once configured, you can use natural language commands with Copilot:
     "isError": false
   }
 }
-```
+````
 
 ### Branch List Response
 
@@ -553,10 +563,10 @@ $env:DOTNET_ENVIRONMENT = $Environment
 
 function Test-JsonRpc {
     param([string]$Message, [string]$ExpectedPattern = "")
-    
+
     Write-Host "Testing: $Message" -ForegroundColor Cyan
     $response = $Message | dotnet run --project $ProjectPath --no-build --verbosity quiet
-    
+
     if ($ExpectedPattern -and $response -match $ExpectedPattern) {
         Write-Host "✓ PASS" -ForegroundColor Green
     } elseif (-not $ExpectedPattern) {
@@ -586,6 +596,7 @@ Write-Host "Testing complete!" -ForegroundColor Green
 ```
 
 Run the test script:
+
 ```powershell
 .\test-mcp.ps1 -ProjectPath "path\to\selfDocumentMCP.csproj"
 ```
@@ -595,16 +606,19 @@ Run the test script:
 ### Common Issues
 
 1. **Git Repository Not Found**
+
    - **Error**: "Repository not found" or "Not a git repository"
    - **Solution**: Ensure you're running the MCP server from within a git repository
    - **Check**: `git status` should work in the current directory
 
 2. **Branch Not Found**
+
    - **Error**: "Branch 'xyz' not found"
    - **Solution**: Verify branch names using the branch discovery tools
    - **Check**: Use `get_all_branches` tool to see available branches
 
 3. **Remote Branch Access Issues**
+
    - **Error**: "Remote branch not accessible" or "Authentication failed"
    - **Solutions**:
      - Verify remote access: `git remote -v`
@@ -612,11 +626,13 @@ Run the test script:
      - Use `fetch_from_remote` tool to update remote references
 
 4. **Commit Hash Invalid**
+
    - **Error**: "Invalid commit hash" or "Commit not found"
    - **Solution**: Use `get_recent_commits` tool to find valid commit hashes
    - **Check**: `git log --oneline -10` for recent commits
 
 5. **File Path Issues**
+
    - **Error**: "Access denied" or "Path not found"
    - **Solutions**:
      - Use absolute paths or ensure relative paths are correct
@@ -633,6 +649,7 @@ Run the test script:
 ### Performance Issues
 
 1. **Slow Response with Large Repositories**
+
    - **Issue**: Timeouts or very slow responses
    - **Solutions**:
      - Use smaller `maxCommits` values (10-50 instead of 100+)
@@ -649,6 +666,7 @@ Run the test script:
 ### Debugging
 
 #### Enable Debug Logging
+
 ```json
 {
   "env": {
@@ -662,12 +680,14 @@ Check logs in `logs/selfdocumentmcp-dev.log` for detailed error information.
 #### Manual Testing Commands
 
 Test basic connectivity:
+
 ```powershell
 $env:DOTNET_ENVIRONMENT="Production"
 echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}' | dotnet run --no-build --verbosity quiet
 ```
 
 Test tool availability:
+
 ```powershell
 echo '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' | dotnet run --no-build --verbosity quiet
 ```
@@ -682,17 +702,20 @@ echo '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' | dotnet run -
 ## Output Examples
 
 ### Markdown Format (Default)
+
 - Clean, readable documentation with headers and code blocks
 - Suitable for README files, GitHub wikis, and documentation sites
 - Includes tables for structured data and proper code highlighting
 
 ### HTML Format
+
 - Rich formatting with CSS styling and professional appearance
 - Interactive elements and proper HTML structure
 - Suitable for web viewing, reports, and presentations
 - Includes responsive design for different screen sizes
 
 ### Text Format
+
 - Plain text output without formatting
 - Good for logs, simple documentation, and integration with other tools
 - Raw information without markup or styling
@@ -701,11 +724,13 @@ echo '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' | dotnet run -
 ## Best Practices
 
 ### Repository Management
+
 1. **Keep Remotes Updated**: Regularly fetch from remote repositories
 2. **Use Descriptive Branch Names**: Follow team conventions (feature/, bugfix/, hotfix/)
 3. **Clean Commit Messages**: Write clear, descriptive commit messages
 
 ### Documentation Generation
+
 1. **Reasonable Limits**: Use appropriate `maxCommits` values (10-100)
 2. **Organized Output**: Save documentation to dedicated folders (docs/, analysis/)
 3. **Format Selection**: Choose format based on intended use:
@@ -714,16 +739,19 @@ echo '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' | dotnet run -
    - Text for logs and automated processing
 
 ### Remote Branch Usage
+
 1. **Fetch Before Comparing**: Use `fetchRemote: true` for up-to-date comparisons
 2. **Meaningful Comparisons**: Compare related branches (feature vs main, release vs main)
 3. **Clear Naming**: Use consistent remote naming (origin, upstream, fork)
 
 ### Performance Optimization
+
 1. **Incremental Analysis**: Start with small commit ranges, expand as needed
 2. **Specific File Analysis**: Use file filters when analyzing large changes
 3. **Batch Operations**: Group related analysis tasks together
 
 ### Integration with Workflow
+
 1. **Pre-commit Analysis**: Review changes before committing
 2. **Pull Request Preparation**: Document changes for code review
 3. **Release Planning**: Compare release branches with main for release notes
@@ -732,6 +760,7 @@ echo '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' | dotnet run -
 ## Advanced Examples
 
 ### Automated Release Notes
+
 ```json
 {
   "name": "compare_branches_with_remote",
@@ -746,6 +775,7 @@ echo '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' | dotnet run -
 ```
 
 ### Code Review Documentation
+
 ```json
 {
   "name": "get_commit_diff_info",
@@ -757,6 +787,7 @@ echo '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' | dotnet run -
 ```
 
 ### Cross-Repository Analysis
+
 ```json
 {
   "name": "compare_branches_with_remote",

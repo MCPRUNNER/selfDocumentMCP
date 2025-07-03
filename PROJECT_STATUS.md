@@ -86,6 +86,7 @@ The selfDocumentMCP project has been successfully developed as a comprehensive M
 - ✅ **Serilog.Extensions.Logging.File**: File-based logging with rotation
 - ✅ **System.Text.Json**: High-performance JSON serialization
 - ✅ **.NET 9.0**: Latest .NET runtime with optimal performance
+
 ## 🔧 Project Structure
 
 ```
@@ -129,10 +130,12 @@ selfDocumentMCP/
 ## 🚀 Complete Tool Inventory
 
 ### Documentation Generation (Core)
+
 1. **generate_git_documentation** - Generate docs from git logs
 2. **generate_git_documentation_to_file** - Save docs to file
 
 ### Branch Operations (Enhanced)
+
 3. **compare_branches_documentation** - Compare local branches
 4. **compare_branches_with_remote** - 🆕 Compare with remote branch support
 5. **get_local_branches** - 🆕 List local branches
@@ -141,6 +144,7 @@ selfDocumentMCP/
 8. **fetch_from_remote** - 🆕 Fetch from remote repository
 
 ### Commit Analysis (Advanced)
+
 9. **compare_commits_documentation** - Compare specific commits
 10. **get_recent_commits** - 🆕 Get recent commits with details
 11. **get_changed_files_between_commits** - 🆕 List changed files
@@ -149,39 +153,42 @@ selfDocumentMCP/
 
 ## 📋 Tool Capabilities Matrix
 
-| Tool | Local Branches | Remote Branches | Commit Analysis | File Output | Formats |
-|------|:-------------:|:---------------:|:---------------:|:-----------:|:-------:|
-| generate_git_documentation | ✅ | ✅ | ✅ | ❌ | M,H,T |
-| generate_git_documentation_to_file | ✅ | ✅ | ✅ | ✅ | M,H,T |
-| compare_branches_documentation | ✅ | ❌ | ✅ | ✅ | M,H,T |
-| compare_branches_with_remote | ✅ | ✅ | ✅ | ✅ | M,H,T |
-| compare_commits_documentation | ✅ | ✅ | ✅ | ✅ | M,H,T |
-| get_recent_commits | ✅ | ✅ | ✅ | ❌ | Text |
-| get_changed_files_between_commits | ✅ | ✅ | ✅ | ❌ | Text |
-| get_detailed_diff_between_commits | ✅ | ✅ | ✅ | ❌ | Text |
-| get_commit_diff_info | ✅ | ✅ | ✅ | ❌ | Text |
-| get_local_branches | ✅ | ❌ | ❌ | ❌ | Text |
-| get_remote_branches | ❌ | ✅ | ❌ | ❌ | Text |
-| get_all_branches | ✅ | ✅ | ❌ | ❌ | Text |
-| fetch_from_remote | ❌ | ✅ | ❌ | ❌ | Text |
+| Tool                               | Local Branches | Remote Branches | Commit Analysis | File Output | Formats |
+| ---------------------------------- | :------------: | :-------------: | :-------------: | :---------: | :-----: |
+| generate_git_documentation         |       ✅       |       ✅        |       ✅        |     ❌      |  M,H,T  |
+| generate_git_documentation_to_file |       ✅       |       ✅        |       ✅        |     ✅      |  M,H,T  |
+| compare_branches_documentation     |       ✅       |       ❌        |       ✅        |     ✅      |  M,H,T  |
+| compare_branches_with_remote       |       ✅       |       ✅        |       ✅        |     ✅      |  M,H,T  |
+| compare_commits_documentation      |       ✅       |       ✅        |       ✅        |     ✅      |  M,H,T  |
+| get_recent_commits                 |       ✅       |       ✅        |       ✅        |     ❌      |  Text   |
+| get_changed_files_between_commits  |       ✅       |       ✅        |       ✅        |     ❌      |  Text   |
+| get_detailed_diff_between_commits  |       ✅       |       ✅        |       ✅        |     ❌      |  Text   |
+| get_commit_diff_info               |       ✅       |       ✅        |       ✅        |     ❌      |  Text   |
+| get_local_branches                 |       ✅       |       ❌        |       ❌        |     ❌      |  Text   |
+| get_remote_branches                |       ❌       |       ✅        |       ❌        |     ❌      |  Text   |
+| get_all_branches                   |       ✅       |       ✅        |       ❌        |     ❌      |  Text   |
+| fetch_from_remote                  |       ❌       |       ✅        |       ❌        |     ❌      |  Text   |
 
 **Legend**: M=Markdown, H=HTML, T=Text
 
 ## 🎯 Business Value & Use Cases
 
 ### Development Team Benefits
+
 - **Code Review Preparation**: Document changes before pull requests
 - **Release Planning**: Compare release branches with main for release notes
 - **Feature Analysis**: Analyze feature branch changes and impact
 - **Team Synchronization**: Keep local and remote branches synchronized
 
 ### Project Management Benefits
+
 - **Change Tracking**: Comprehensive change analysis between any two points
 - **Release Documentation**: Automated release note generation
 - **Impact Assessment**: Understand scope of changes and affected files
 - **Historical Analysis**: Generate project history and development timeline
 
 ### DevOps Integration Benefits
+
 - **CI/CD Documentation**: Automated documentation for build pipelines
 - **Remote Repository Analysis**: Cross-repository comparison and analysis
 - **Branch Strategy Support**: Support for GitFlow, GitHub Flow, and custom strategies
@@ -190,6 +197,7 @@ selfDocumentMCP/
 ## ✅ Quality Assurance & Testing
 
 ### Testing Completed
+
 - [x] All 13 tools tested and verified
 - [x] Remote branch operations tested with GitHub repositories
 - [x] JSON-RPC protocol communication verified
@@ -198,6 +206,7 @@ selfDocumentMCP/
 - [x] VS Code integration tested with Copilot
 
 ### Quality Metrics
+
 - **Code Coverage**: Comprehensive error handling in all tools
 - **Performance**: Optimized for repositories with 1000+ commits
 - **Reliability**: Robust error handling and graceful degradation
@@ -207,6 +216,7 @@ selfDocumentMCP/
 ## 🚀 Production Readiness
 
 ### Deployment Checklist
+
 - [x] **Build System**: Builds cleanly with .NET 9.0
 - [x] **Configuration**: Environment-based configuration
 - [x] **Logging**: File-based logging with rotation
@@ -216,6 +226,7 @@ selfDocumentMCP/
 - [x] **Integration**: VS Code MCP configuration ready
 
 ### Performance Characteristics
+
 - **Startup Time**: ~2-3 seconds for typical repositories
 - **Memory Usage**: ~20-50MB for standard operations
 - **Response Time**: <1 second for most operations
@@ -225,12 +236,14 @@ selfDocumentMCP/
 ## 📞 Support & Maintenance
 
 ### Documentation Resources
+
 - **README.md**: Complete feature documentation
 - **EXAMPLES.md**: Comprehensive usage examples
 - **PROJECT_STATUS.md**: Current status and capabilities
 - **Inline Documentation**: Comprehensive code comments
 
 ### Troubleshooting Resources
+
 - **Log Files**: Detailed logging for debugging
 - **Error Messages**: Clear, actionable error descriptions
 - **Common Issues**: Documented solutions in README
@@ -241,18 +254,21 @@ selfDocumentMCP/
 While the current implementation is feature-complete, potential enhancements could include:
 
 ### Advanced Features
+
 - **Date Range Filtering**: Filter commits by date ranges
 - **Author Filtering**: Filter commits by specific authors
 - **File Pattern Matching**: Focus on specific file types or patterns
 - **Interactive Mode**: Command-line interface for direct usage
 
 ### Integration Enhancements
+
 - **Multi-Repository Support**: Compare across different repositories
 - **Export Formats**: JSON, XML, CSV output options
 - **Template System**: Customizable documentation templates
 - **Webhook Integration**: Automated documentation on repository events
 
 ### Performance Optimizations
+
 - **Caching System**: Cache git operations for improved performance
 - **Incremental Updates**: Update documentation incrementally
 - **Parallel Processing**: Parallel git operations for large repositories
@@ -261,6 +277,7 @@ While the current implementation is feature-complete, potential enhancements cou
 ## 🏆 Project Success Metrics
 
 ### Implementation Goals (All Achieved)
+
 - ✅ **MCP Protocol Compliance**: Full JSON-RPC 2.0 implementation
 - ✅ **VS Code Integration**: Seamless Copilot Agent integration
 - ✅ **Git Operation Coverage**: Comprehensive git analysis capabilities
@@ -269,6 +286,7 @@ While the current implementation is feature-complete, potential enhancements cou
 - ✅ **Documentation Complete**: Comprehensive user and developer docs
 
 ### Technical Excellence
+
 - ✅ **Clean Architecture**: Well-structured, maintainable codebase
 - ✅ **Best Practices**: Follows .NET and MCP best practices
 - ✅ **Error Resilience**: Graceful handling of all error conditions

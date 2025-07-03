@@ -72,17 +72,20 @@ After updating the MCP configuration, restart VS Code completely for the changes
 Try asking Copilot about the enhanced capabilities:
 
 ### Basic Documentation
+
 - "Generate documentation from git logs"
 - "Show me the available MCP tools"
 - "Create git documentation and save it to docs/changelog.md"
 
 ### Remote Branch Features (🆕 New)
+
 - "Compare my feature branch with origin/main"
 - "List all remote branches in this repository"
 - "Fetch from origin and compare branches"
 - "Show me recent commits with detailed information"
 
 ### Advanced Analysis
+
 - "Compare two commits and show me what files changed"
 - "Get comprehensive diff information between commits"
 - "Analyze differences between release and main branches"
@@ -92,10 +95,12 @@ Try asking Copilot about the enhanced capabilities:
 The MCP server provides comprehensive git analysis tools:
 
 ### Core Documentation (2)
+
 - `generate_git_documentation` - Generate docs from git logs
 - `generate_git_documentation_to_file` - Save docs to file
 
 ### Branch Operations (6)
+
 - `compare_branches_documentation` - Compare local branches
 - `compare_branches_with_remote` - 🆕 Compare with remote support
 - `get_local_branches` - 🆕 List local branches
@@ -104,6 +109,7 @@ The MCP server provides comprehensive git analysis tools:
 - `fetch_from_remote` - 🆕 Fetch from remote
 
 ### Commit Analysis (5)
+
 - `compare_commits_documentation` - Compare commits
 - `get_recent_commits` - 🆕 Get recent commits
 - `get_changed_files_between_commits` - 🆕 List changed files
