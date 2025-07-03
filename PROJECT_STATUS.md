@@ -150,6 +150,7 @@ selfDocumentMCP/
 11. **get_changed_files_between_commits** - 🆕 List changed files
 12. **get_detailed_diff_between_commits** - 🆕 Detailed diff content
 13. **get_commit_diff_info** - 🆕 Comprehensive diff statistics
+14. **get_file_line_diff_between_commits** - 🆕 Line-by-line file diff
 
 ## 📋 Tool Capabilities Matrix
 
@@ -164,6 +165,7 @@ selfDocumentMCP/
 | get_changed_files_between_commits  |       ✅       |       ✅        |       ✅        |     ❌      |  Text   |
 | get_detailed_diff_between_commits  |       ✅       |       ✅        |       ✅        |     ❌      |  Text   |
 | get_commit_diff_info               |       ✅       |       ✅        |       ✅        |     ❌      |  Text   |
+| get_file_line_diff_between_commits |       ✅       |       ✅        |       ✅        |     ❌      |  Text   |
 | get_local_branches                 |       ✅       |       ❌        |       ❌        |     ❌      |  Text   |
 | get_remote_branches                |       ❌       |       ✅        |       ❌        |     ❌      |  Text   |
 | get_all_branches                   |       ✅       |       ✅        |       ❌        |     ❌      |  Text   |

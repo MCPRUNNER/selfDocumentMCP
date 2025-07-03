@@ -17,6 +17,7 @@ public interface IGitService
     Task<List<string>> GetChangedFilesBetweenCommitsAsync(string repositoryPath, string commit1, string commit2);
     Task<string> GetDetailedDiffBetweenCommitsAsync(string repositoryPath, string commit1, string commit2, List<string>? specificFiles = null);
     Task<GitCommitDiffInfo> GetCommitDiffInfoAsync(string repositoryPath, string commit1, string commit2);
+    Task<FileLineDiffInfo> GetFileLineDiffBetweenCommitsAsync(string repositoryPath, string commit1, string commit2, string filePath);
 
     // New methods for remote branch support
     Task<List<string>> GetLocalBranchesAsync(string repositoryPath);
@@ -385,6 +386,116 @@ public class GitService : IGitService
         {
             _logger.LogError(ex, "Error getting commit diff info between {Commit1} and {Commit2}", commit1, commit2);
             throw;
+        }
+    }
+
+    public Task<FileLineDiffInfo> GetFileLineDiffBetweenCommitsAsync(string repositoryPath, string commit1, string commit2, string filePath)
+    {
+        _logger.LogInformation("Getting line-by-line file diff between commits {Commit1} and {Commit2} for file {FilePath}", commit1, commit2, filePath);
+
+        var result = new FileLineDiffInfo
+        {
+            FilePath = filePath,
+            Commit1 = commit1,
+            Commit2 = commit2
+        };
+
+        try
+        {
+            if (!Repository.IsValid(repositoryPath))
+            {
+                result.ErrorMessage = $"Path is not a valid git repository: {repositoryPath}";
+                return Task.FromResult(result);
+            }
+
+            using var repo = new Repository(repositoryPath);
+
+            // Get commit objects
+            var commitObj1 = repo.Lookup<Commit>(commit1);
+            if (commitObj1 == null)
+            {
+                result.ErrorMessage = $"Invalid commit hash: {commit1}";
+                return Task.FromResult(result);
+            }
+
+            var commitObj2 = repo.Lookup<Commit>(commit2);
+            if (commitObj2 == null)
+            {
+                result.ErrorMessage = $"Invalid commit hash: {commit2}";
+                return Task.FromResult(result);
+            }
+
+            // Get the file tree entries from both commits
+            var tree1 = commitObj1.Tree;
+            var tree2 = commitObj2.Tree;
+
+            // Check if the file exists in both commits
+            var fileEntry1 = tree1[filePath];
+            var fileEntry2 = tree2[filePath];
+
+            if (fileEntry1 == null && fileEntry2 == null)
+            {
+                result.ErrorMessage = $"File {filePath} does not exist in either commit";
+                return Task.FromResult(result);
+            }
+
+            result.FileExistsInBothCommits = fileEntry1 != null && fileEntry2 != null;
+
+            // Prepare for diff
+            var diffOptions = new CompareOptions
+            {
+                ContextLines = 3,
+                InterhunkLines = 1,
+                IncludeUnmodified = true
+            };
+
+            var patchText = string.Empty;
+
+            // Get the diff between the two file versions
+            if (fileEntry1 != null && fileEntry2 != null)
+            {
+                // File exists in both commits - compare content
+                var patch = repo.Diff.Compare<Patch>(tree1, tree2, new[] { filePath }, diffOptions);
+                patchText = patch?.Content ?? string.Empty;
+            }
+            else if (fileEntry1 != null)
+            {
+                // File only exists in the first commit - show as deletion
+                var patch = repo.Diff.Compare<Patch>(tree1, null, new[] { filePath }, diffOptions);
+                patchText = patch?.Content ?? string.Empty;
+                if (fileEntry1.TargetType == TreeEntryTargetType.Blob)
+                {
+                    result.DeletedLines = result.TotalLines = CountLines(fileEntry1);
+                }
+            }
+            else if (fileEntry2 != null)
+            {
+                // File only exists in the second commit - show as addition
+                var patch = repo.Diff.Compare<Patch>(null, tree2, new[] { filePath }, diffOptions);
+                patchText = patch?.Content ?? string.Empty;
+                if (fileEntry2.TargetType == TreeEntryTargetType.Blob)
+                {
+                    result.AddedLines = result.TotalLines = CountLines(fileEntry2);
+                }
+            }
+
+            // Parse the unified diff format
+            var lines = ParseUnifiedDiff(patchText);
+            result.Lines = lines;
+
+            // Calculate stats
+            result.AddedLines = lines.Count(l => l.Type == "Added");
+            result.DeletedLines = lines.Count(l => l.Type == "Deleted");
+            result.ModifiedLines = lines.Count(l => l.Type == "Modified");
+            result.TotalLines = lines.Count;
+
+            return Task.FromResult(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting file line diff between commits {Commit1} and {Commit2} for file {FilePath}", commit1, commit2, filePath);
+            result.ErrorMessage = $"Error: {ex.Message}";
+            return Task.FromResult(result);
         }
     }
 
@@ -762,5 +873,121 @@ public class GitService : IGitService
             return branchName.Substring(6);
 
         return branchName;
+    }
+
+    private int CountLines(TreeEntry entry)
+    {
+        if (entry == null || entry.TargetType != TreeEntryTargetType.Blob)
+            return 0;
+
+        var blob = (Blob)entry.Target;
+        if (blob.IsBinary)
+            return 0;
+
+        using var contentStream = new StreamReader(blob.GetContentStream());
+        var content = contentStream.ReadToEnd();
+        return content.Split('\n').Length;
+    }
+
+    private List<LineDiff> ParseUnifiedDiff(string unifiedDiff)
+    {
+        var result = new List<LineDiff>();
+        if (string.IsNullOrEmpty(unifiedDiff))
+            return result;
+
+        var lines = unifiedDiff.Split('\n');
+        var lineNumber = 1;
+
+        // Skip the header lines
+        var i = 0;
+        while (i < lines.Length && !lines[i].StartsWith("@@"))
+            i++;
+
+        // Process diff chunks
+        while (i < lines.Length)
+        {
+            if (lines[i].StartsWith("@@"))
+            {
+                // Parse the hunk header like @@ -1,7 +1,7 @@
+                var match = System.Text.RegularExpressions.Regex.Match(
+                    lines[i], @"@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@");
+
+                if (match.Success)
+                {
+                    var oldStart = int.Parse(match.Groups[1].Value);
+                    var newStart = int.Parse(match.Groups[2].Value);
+
+                    result.Add(new LineDiff
+                    {
+                        LineNumber = lineNumber++,
+                        OldLineNumber = "-",
+                        NewLineNumber = "-",
+                        Content = lines[i],
+                        Type = "Header"
+                    });
+
+                    i++;
+                    var oldLine = oldStart;
+                    var newLine = newStart;
+
+                    // Process the lines in this hunk
+                    while (i < lines.Length && !lines[i].StartsWith("@@"))
+                    {
+                        if (lines[i].StartsWith("+"))
+                        {
+                            // Added line
+                            result.Add(new LineDiff
+                            {
+                                LineNumber = lineNumber++,
+                                OldLineNumber = "-",
+                                NewLineNumber = newLine.ToString(),
+                                Content = lines[i],
+                                Type = "Added"
+                            });
+                            newLine++;
+                        }
+                        else if (lines[i].StartsWith("-"))
+                        {
+                            // Deleted line
+                            result.Add(new LineDiff
+                            {
+                                LineNumber = lineNumber++,
+                                OldLineNumber = oldLine.ToString(),
+                                NewLineNumber = "-",
+                                Content = lines[i],
+                                Type = "Deleted"
+                            });
+                            oldLine++;
+                        }
+                        else if (!string.IsNullOrEmpty(lines[i]))
+                        {
+                            // Context line
+                            result.Add(new LineDiff
+                            {
+                                LineNumber = lineNumber++,
+                                OldLineNumber = oldLine.ToString(),
+                                NewLineNumber = newLine.ToString(),
+                                Content = lines[i],
+                                Type = "Context"
+                            });
+                            oldLine++;
+                            newLine++;
+                        }
+
+                        i++;
+                    }
+                }
+                else
+                {
+                    i++;
+                }
+            }
+            else
+            {
+                i++;
+            }
+        }
+
+        return result;
     }
 }

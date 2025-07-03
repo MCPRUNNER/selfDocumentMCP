@@ -300,6 +300,22 @@ public class McpServer : IMcpServer
             },
             new Tool
             {
+                Name = "get_file_line_diff_between_commits",
+                Description = "Get line-by-line file diff between two commits",
+                InputSchema = new
+                {
+                    type = "object",
+                    properties = new
+                    {
+                        commit1 = new { type = "string", description = "First commit hash" },
+                        commit2 = new { type = "string", description = "Second commit hash" },
+                        filePath = new { type = "string", description = "Path to the file to diff" }
+                    },
+                    required = new[] { "commit1", "commit2", "filePath" }
+                }
+            },
+            new Tool
+            {
                 Name = "get_local_branches",
                 Description = "Get list of local branches in the repository",
                 InputSchema = new
@@ -397,6 +413,7 @@ public class McpServer : IMcpServer
             "get_changed_files_between_commits" => await HandleGetChangedFilesBetweenCommitsAsync(toolRequest),
             "get_detailed_diff_between_commits" => await HandleGetDetailedDiffBetweenCommitsAsync(toolRequest),
             "get_commit_diff_info" => await HandleGetCommitDiffInfoAsync(toolRequest),
+            "get_file_line_diff_between_commits" => await HandleGetFileLineDiffBetweenCommitsAsync(toolRequest),
             "get_local_branches" => await HandleGetLocalBranchesAsync(toolRequest),
             "get_remote_branches" => await HandleGetRemoteBranchesAsync(toolRequest),
             "get_all_branches" => await HandleGetAllBranchesAsync(toolRequest),
@@ -895,6 +912,85 @@ public class McpServer : IMcpServer
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error generating remote branch comparison documentation");
+            return new CallToolResponse
+            {
+                IsError = true,
+                Content = new[] { new ToolContent { Type = "text", Text = $"Error: {ex.Message}" } }
+            };
+        }
+    }
+
+    private async Task<CallToolResponse> HandleGetFileLineDiffBetweenCommitsAsync(CallToolRequest toolRequest)
+    {
+        try
+        {
+            var workspaceRoot = Environment.CurrentDirectory;
+            var commit1 = GetArgumentValue<string>(toolRequest.Arguments, "commit1", string.Empty);
+            var commit2 = GetArgumentValue<string>(toolRequest.Arguments, "commit2", string.Empty);
+            var filePath = GetArgumentValue<string>(toolRequest.Arguments, "filePath", string.Empty);
+
+            if (string.IsNullOrEmpty(commit1) || string.IsNullOrEmpty(commit2) || string.IsNullOrEmpty(filePath))
+            {
+                return new CallToolResponse
+                {
+                    IsError = true,
+                    Content = new[] { new ToolContent { Type = "text", Text = "Missing required arguments: commit1, commit2, and filePath are required" } }
+                };
+            }
+
+            var diffInfo = await _gitService.GetFileLineDiffBetweenCommitsAsync(workspaceRoot, commit1, commit2, filePath);
+
+            if (!string.IsNullOrEmpty(diffInfo.ErrorMessage))
+            {
+                return new CallToolResponse
+                {
+                    IsError = true,
+                    Content = new[] { new ToolContent { Type = "text", Text = diffInfo.ErrorMessage } }
+                };
+            }
+
+            // Build a formatted result with syntax highlighting
+            var sb = new StringBuilder();
+            sb.AppendLine($"# Line-by-Line File Diff");
+            sb.AppendLine();
+            sb.AppendLine($"**File:** `{diffInfo.FilePath}`");
+            sb.AppendLine($"**From Commit:** {diffInfo.Commit1}");
+            sb.AppendLine($"**To Commit:** {diffInfo.Commit2}");
+            sb.AppendLine();
+            sb.AppendLine($"**Summary:**");
+            sb.AppendLine($"- Added Lines: {diffInfo.AddedLines}");
+            sb.AppendLine($"- Deleted Lines: {diffInfo.DeletedLines}");
+            sb.AppendLine($"- Modified Lines: {diffInfo.ModifiedLines}");
+            sb.AppendLine($"- Total Changes: {diffInfo.AddedLines + diffInfo.DeletedLines + diffInfo.ModifiedLines}");
+            sb.AppendLine();
+
+            if (!diffInfo.FileExistsInBothCommits)
+            {
+                if (diffInfo.AddedLines > 0)
+                {
+                    sb.AppendLine("*File was added in the second commit*");
+                }
+                else if (diffInfo.DeletedLines > 0)
+                {
+                    sb.AppendLine("*File was deleted in the second commit*");
+                }
+            }
+
+            sb.AppendLine("```diff");
+            foreach (var line in diffInfo.Lines)
+            {
+                sb.AppendLine(line.Content);
+            }
+            sb.AppendLine("```");
+
+            return new CallToolResponse
+            {
+                Content = new[] { new ToolContent { Type = "text", Text = sb.ToString() } }
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting file line diff between commits");
             return new CallToolResponse
             {
                 IsError = true,

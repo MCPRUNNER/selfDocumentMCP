@@ -330,6 +330,24 @@ Once configured, you can use natural language commands with Copilot:
 }
 ```
 
+#### Get File Line Diff
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 11,
+  "method": "tools/call",
+  "params": {
+    "name": "get_file_line_diff_between_commits",
+    "arguments": {
+      "commit1": "abc123def",
+      "commit2": "456ghi789",
+      "filePath": "Services/GitService.cs"
+    }
+  }
+}
+```
+
 ### Branch Discovery Tools
 
 #### Get All Branches
