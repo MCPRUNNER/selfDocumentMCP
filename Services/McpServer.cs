@@ -977,9 +977,37 @@ public class McpServer : IMcpServer
             }
 
             sb.AppendLine("```diff");
+            // Group lines by chunks to improve readability
+            var currentChunk = new List<LineDiff>();
+            var lastType = "";
+
             foreach (var line in diffInfo.Lines)
             {
-                sb.AppendLine(line.Content);
+                if (line.Type == "Header" && currentChunk.Any())
+                {
+                    // Print the current chunk with line numbers
+                    foreach (var chunkLine in currentChunk)
+                    {
+                        var oldNum = chunkLine.OldLineNumber.PadLeft(4);
+                        var newNum = chunkLine.NewLineNumber.PadLeft(4);
+                        sb.AppendLine($"{oldNum}:{newNum} {chunkLine.Content}");
+                    }
+                    currentChunk.Clear();
+                }
+
+                currentChunk.Add(line);
+                lastType = line.Type;
+            }
+
+            // Print the last chunk
+            if (currentChunk.Any())
+            {
+                foreach (var chunkLine in currentChunk)
+                {
+                    var oldNum = chunkLine.OldLineNumber.PadLeft(4);
+                    var newNum = chunkLine.NewLineNumber.PadLeft(4);
+                    sb.AppendLine($"{oldNum}:{newNum} {chunkLine.Content}");
+                }
             }
             sb.AppendLine("```");
 
