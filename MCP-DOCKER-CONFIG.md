@@ -75,50 +75,6 @@ This file provides quick copy-paste configurations for using GitVisionMCP with D
 }
 ```
 
-### Docker Compose
-
-```json
-{
-  "servers": {
-    "GitVisionMCP-Compose": {
-      "type": "stdio",
-      "command": "docker-compose",
-      "args": ["run", "--rm", "--name", "gitvisionmcp-compose", "gitvisionmcp"],
-      "cwd": "/path/to/GitVisionMCP/project",
-      "env": {
-        "DOTNET_ENVIRONMENT": "Production"
-      }
-    }
-  }
-}
-```
-
-### Development Mode (Hot Reload)
-
-```json
-{
-  "servers": {
-    "GitVisionMCP-Dev": {
-      "type": "stdio",
-      "command": "docker-compose",
-      "args": [
-        "--profile",
-        "dev",
-        "run",
-        "--rm",
-        "--name",
-        "gitvisionmcp-dev",
-        "gitvisionmcp-dev"
-      ],
-      "cwd": "/path/to/GitVisionMCP/project",
-      "env": {
-        "DOTNET_ENVIRONMENT": "Development"
-      }
-    }
-  }
-}
-```
-
 ## Troubleshooting
 
 ### Common Issues

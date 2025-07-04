@@ -6,7 +6,7 @@
             "args": [
                 "run",
                 "--project",
-                "c:\\Users\\U00001\\source\\repos\\MCP\\GitVisionMCP\\GitVisionMCP.csproj",
+                "c:\\SOURCE\\GitVisionMCP\\GitVisionMCP.csproj",
                 "--no-build",
                 "--verbosity",
                 "quiet"
@@ -23,25 +23,10 @@
                 "--rm",
                 "-i",
                 "--name", "gitvisionmcp-mcp",
-                "-v", "c:\\Users\\U00001\\source\\repos\\MCP\\GitVisionMCP:/workspace:ro",
-                "-v", "c:\\Users\\U00001\\source\\repos\\MCP\\GitVisionMCP\\logs:/app/logs",
+                "-v", "c:\\SOURCE\\GitVisionMCP\\GitVisionMCP:/workspace:ro",
+                "-v", "c:\\SOURCE\\GitVisionMCP\\GitVisionMCP\\logs:/app/logs",
                 "mcprunner/gitvisionmcp:latest"
             ],
-            "env": {
-                "DOTNET_ENVIRONMENT": "Production"
-            }
-        },
-        "GitVisionMCP-Docker-Compose": {
-            "type": "stdio", 
-            "command": "docker-compose",
-            "args": [
-                "-f", "c:\\Users\\U00001\\source\\repos\\MCP\\GitVisionMCP\\docker-compose.yml",
-                "run",
-                "--rm",
-                "--name", "gitvisionmcp-mcp-compose",
-                "mcprunner/gitvisionmcp"
-            ],
-            "cwd": "c:\\Users\\U00001\\source\\repos\\MCP\\GitVisionMCP",
             "env": {
                 "DOTNET_ENVIRONMENT": "Production"
             }

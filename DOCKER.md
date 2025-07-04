@@ -2,11 +2,14 @@
 
 This directory contains Docker configurations for running GitVisionMCP in containerized environments.
 
+## Prebuild Docker Image
+
+You can access a prebuilt Docker image for GitVisionMCP at [mcprunner/gitvisionmcp](https://hub.docker.com/r/mcprunner/gitvisionmcp).
+This image is built from the `Dockerfile` in this repository and includes all necessary dependencies for running GitVisionMCP.
+
 ## Files Overview
 
 - `Dockerfile` - Production-ready multi-stage build
-- `Dockerfile.dev` - Development environment with hot reload
-- `docker-compose.yml` - Orchestration for both production and development
 - `.dockerignore` - Excludes unnecessary files from Docker build context
 
 ## Quick Start
