@@ -24,34 +24,7 @@ docker build -t gitvisionmcp:latest .
 docker run -d --name gitvisionmcp \
   -v "$(pwd)/workspace:/workspace:ro" \
   -v "$(pwd)/logs:/app/logs" \
-  gitvisionmcp:latest
-```
-
-### Using Docker Compose
-
-```bash
-# Production environment
-docker-compose up -d gitvisionmcp
-
-# Development environment with hot reload
-docker-compose --profile dev up -d gitvisionmcp-dev
-```
-
-## Development Environment
-
-The development setup includes:
-
-- Hot reload with `dotnet watch`
-- Source code volume mounting
-- Development-specific environment variables
-- Debugging capabilities
-
-```bash
-# Start development environment
-docker-compose --profile dev up gitvisionmcp-dev
-
-# View logs
-docker-compose --profile dev logs -f gitvisionmcp-dev
+  mcprunner/gitvisionmcp:latest
 ```
 
 ## Volume Mounts
@@ -67,7 +40,7 @@ docker-compose --profile dev logs -f gitvisionmcp-dev
 docker run -d --name gitvisionmcp \
   -v "/path/to/your/git/repo:/workspace:ro" \
   -v "$(pwd)/logs:/app/logs" \
-  gitvisionmcp:latest
+  mcprunner/gitvisionmcp:latest
 ```
 
 ## Environment Variables
@@ -77,7 +50,6 @@ docker run -d --name gitvisionmcp \
 
 ## Security Considerations
 
-- The container runs as a non-root user (`mcpuser`)
 - Git repositories are mounted read-only in production
 - Logs are written to a dedicated volume
 
@@ -106,7 +78,7 @@ docker exec gitvisionmcp ps aux
 
 ```bash
 # Build for multiple platforms
-docker buildx build --platform linux/amd64,linux/arm64 -t gitvisionmcp:latest .
+docker buildx build --platform linux/amd64,linux/arm64 -t mcprunner/gitvisionmcp:latest.
 
 # Build for specific platform
 docker build --platform linux/amd64 -t gitvisionmcp:amd64 .
@@ -144,24 +116,6 @@ When using GitVisionMCP with Model Context Protocol clients, you can configure t
 }
 ```
 
-### Option 2: Docker Compose
-
-```json
-{
-  "servers": {
-    "GitVisionMCP-Compose": {
-      "type": "stdio",
-      "command": "docker-compose",
-      "args": ["run", "--rm", "--name", "gitvisionmcp-compose", "gitvisionmcp"],
-      "cwd": "/path/to/GitVisionMCP",
-      "env": {
-        "DOTNET_ENVIRONMENT": "Production"
-      }
-    }
-  }
-}
-```
-
 ### Configuration Examples
 
 See `mcp.json` for comprehensive examples including:
@@ -181,13 +135,9 @@ See `mcp.json` for comprehensive examples including:
 ## Updates and Maintenance
 
 ```bash
-# Rebuild after code changes
-docker-compose build gitvisionmcp
+# Update the image
+docker pull mcprunner/gitvisionmcp:latest
 
-# Update and restart
-docker-compose down
-docker-compose pull
-docker-compose up -d
 
 # Clean up old images
 docker image prune -f

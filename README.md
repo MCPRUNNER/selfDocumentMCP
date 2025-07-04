@@ -2,6 +2,9 @@
 
 A comprehensive Model Context Protocol (MCP) Server that provides advanced git analysis and documentation tools, including powerful commit search capabilities. Designed to be used as a Copilot Agent in VS Code for comprehensive repository analysis and documentation generation.
 
+## Docker Prebuild Image and Build Instructions
+[DOCKER.md](DOCKER.md)
+
 ## 🔥 Key Capabilities
 
 - **📝 Documentation Generation**: Create comprehensive documentation from git logs
