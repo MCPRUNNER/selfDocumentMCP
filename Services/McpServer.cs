@@ -25,9 +25,9 @@ public class McpServer : IMcpServer
 
     public McpServer(ILogger<McpServer> logger, IConfiguration configuration, IGitService gitService)
     {
-        _logger = logger;
-        _configuration = configuration;
-        _gitService = gitService;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        _gitService = gitService ?? throw new ArgumentNullException(nameof(gitService));
         _jsonOptions = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
