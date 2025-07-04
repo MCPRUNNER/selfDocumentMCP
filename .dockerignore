@@ -43,6 +43,8 @@ SETUP.md
 Dockerfile*
 docker-compose*
 .dockerignore
+# Keep health check script
+!docker-healthcheck.sh
 
 # Application logs
 logs/

@@ -37,8 +37,6 @@ This file provides quick copy-paste configurations for using GitVisionMCP with D
         "C:\\path\\to\\your\\workspace:/workspace:ro",
         "-v",
         "C:\\path\\to\\logs:/app/logs",
-        "-w",
-        "/workspace",
         "gitvisionmcp:latest"
       ],
       "env": {
@@ -67,8 +65,6 @@ This file provides quick copy-paste configurations for using GitVisionMCP with D
         "/path/to/your/workspace:/workspace:ro",
         "-v",
         "/path/to/logs:/app/logs",
-        "-w",
-        "/workspace",
         "gitvisionmcp:latest"
       ],
       "env": {
@@ -123,19 +119,6 @@ This file provides quick copy-paste configurations for using GitVisionMCP with D
 }
 ```
 
-## Automated Setup
-
-Use the setup scripts to generate configurations automatically:
-
-```bash
-# Make executable and run (Linux/Mac)
-chmod +x setup-mcp-config.sh
-./setup-mcp-config.sh
-
-# PowerShell (Windows)
-./setup-mcp-config.ps1
-```
-
 ## Troubleshooting
 
 ### Common Issues
@@ -183,13 +166,8 @@ docker ps | grep gitvisionmcp
   - Persistent storage for application logs
   - Read-write access for log output
 
-- **Working Directory**: `-w "/workspace"`
-  - Sets the container's working directory to your workspace
-  - GitVisionMCP will operate on this Git repository
-
 ## Security Notes
 
-- Workspace is mounted read-only for security
 - Container runs as non-root user (mcpuser)
 - Logs directory is the only writable mount
 - Network access is limited to what's needed for Git operations

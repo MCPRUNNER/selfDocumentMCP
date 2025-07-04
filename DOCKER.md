@@ -131,8 +131,6 @@ When using GitVisionMCP with Model Context Protocol clients, you can configure t
         "/path/to/your/workspace:/workspace:ro",
         "-v",
         "/path/to/logs:/app/logs",
-        "-w",
-        "/workspace",
         "gitvisionmcp:latest"
       ],
       "env": {
@@ -161,28 +159,9 @@ When using GitVisionMCP with Model Context Protocol clients, you can configure t
 }
 ```
 
-### Setup Scripts
-
-Use the provided setup scripts to generate the correct configuration for your environment:
-
-```bash
-# Linux/Mac
-./setup-mcp-config.sh
-
-# Windows PowerShell
-./setup-mcp-config.ps1
-```
-
-These scripts will:
-
-- Detect your operating system
-- Check for Docker and .NET availability
-- Generate appropriate `.vscode/mcp.json` configuration
-- Provide correct paths for your environment
-
 ### Configuration Examples
 
-See `.vscode/mcp.examples.json` for comprehensive examples including:
+See `mcp.json` for comprehensive examples including:
 
 - Windows and Unix path formats
 - Development mode configurations

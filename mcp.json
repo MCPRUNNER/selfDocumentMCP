@@ -25,7 +25,6 @@
                 "--name", "gitvisionmcp-mcp",
                 "-v", "c:\\Users\\U00001\\source\\repos\\MCP\\GitVisionMCP:/workspace:ro",
                 "-v", "c:\\Users\\U00001\\source\\repos\\MCP\\GitVisionMCP\\logs:/app/logs",
-                "-w", "/workspace",
                 "mcprunner/gitvisionmcp:latest"
             ],
             "env": {
