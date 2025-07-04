@@ -1,0 +1,61 @@
+version: "3.8"
+
+services:
+  gitvisionmcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gitvisionmcp
+    env_file:
+      - .env.example # Copy to .env and customize
+    environment:
+      - DOTNET_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=
+    volumes:
+      # Mount the workspace directory to allow Git operations
+      - ${HOST_WORKSPACE_PATH:-./workspace}:/workspace:ro
+      # Mount logs directory for persistent logging
+      - ${HOST_LOGS_PATH:-./logs}:/app/logs
+    working_dir: /workspace
+    restart: unless-stopped
+    healthcheck:
+      test: ["/usr/local/bin/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    # Resource limits (uncomment if needed)
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 512M
+    #       cpus: '0.5'
+    # If you need to expose any ports, uncomment the following
+    # ports:
+    #   - "8080:8080"
+
+  # Development version with hot reload
+  gitvisionmcp-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: gitvisionmcp-dev
+    env_file:
+      - .env.example # Copy to .env and customize
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=
+    volumes:
+      - .:/src
+      - ${HOST_WORKSPACE_PATH:-./workspace}:/workspace
+      - ${HOST_LOGS_PATH:-./logs}:/app/logs
+    working_dir: /workspace
+    profiles:
+      - dev
+    command: dotnet watch run --project /src/GitVisionMCP.csproj
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "dotnet"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

@@ -1,0 +1,88 @@
+# .dockerignore file for GitVisionMCP
+
+# Build artifacts
+bin/
+obj/
+out/
+publish/
+
+# Test projects
+**/GitVisionMCP.Tests/
+**/*.Tests/
+**/*Test*/
+**/TestResults/
+
+# IDE files
+.vscode/
+.vs/
+*.user
+*.suo
+*.cache
+*.tmp
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+docs/
+*.txt
+EXAMPLES.md
+README.md
+SETUP.md
+*.log
+
+# Docker files
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Application logs
+logs/
+*.log
+
+# Package managers
+node_modules/
+packages/
+*.lock
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Coverage reports
+coverage/
+*.coverage
+*.coveragexml
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Backup files
+*.bak
+*.backup
+*.orig
+*.swp
+*.swo
